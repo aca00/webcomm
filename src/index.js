@@ -14,19 +14,6 @@ const firebaseConfig = {
 var app = initializeApp(firebaseConfig);
 var db = getDatabase(app);
 
-
-var chats = "";
-
-export function collectionExists(path) {
-    console.log("ISN")
-    get(ref(db, path)).then((snapshot) => {
-        console.log()
-        return snapshot.exists();
-    }).catch((error) => {
-        console.log("Error while checking if collection exists", error);
-    });
-}
-
 function createNewCollection(path) {
     console.log("Calling create new collection at " + path);
     if (path && db) {
@@ -41,22 +28,4 @@ function createNewCollection(path) {
         console.log(path);
         console.log(db);
     }
-}
-
-function loadMessages(path) {
-    console.log("Load messages" + path);
-    get(ref(db, path)).then((snapshot) => {
-        if (snapshot.exists()) {
-            var sp = snapshot;
-            console.log(snapshot);
-            console.log(snapshot.val());
-        } else {
-            console.log("Snapshot does not exist while loading loadMessages");
-            // createNewCollection(path);
-        }
-
-    }).catch((error) => {
-        console.log("Error: ", error);
-    })
-
 }
