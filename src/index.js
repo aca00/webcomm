@@ -11,21 +11,25 @@ const firebaseConfig = {
     appId: process.env.APP_ID
 };
 
-var app = initializeApp(firebaseConfig);
-var db = getDatabase(app);
+export class Worker {
+    constructor() {
+        this.app = initializeApp(firebaseConfig);
+        this.db = getDatabase(this.app);
+    }
 
-function createNewCollection(path) {
-    console.log("Calling create new collection at " + path);
-    if (path && db) {
-        var listRef = push(ref(db, path));
-        set(listRef, { name: "", time: new Date().toISOString(), uid: "", message: "", type: "anon" }).then(() => {
-            console.log("Created node successfully");
-        }).catch((error) => {
-            console.log("Error creating node", error);
-        })
-    } else {
-        console.log("Error path or db does not exist");
-        console.log(path);
-        console.log(db);
+    createNewCollection(path) {
+        console.log("Calling create new collection at " + path);
+        if (path && this.db) {
+            var listRef = push(ref(this.db, path));
+            set(listRef, { name: "", time: new Date().toISOString(), uid: "", message: "", type: "anon" }).then(() => {
+                console.log("Created node successfully");
+            }).catch((error) => {
+                console.log("Error creating node", error);
+            })
+        } else {
+            console.log("Error path or db does not exist");
+            console.log(path);
+            console.log(this.db);
+        }
     }
 }
