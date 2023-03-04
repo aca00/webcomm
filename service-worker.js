@@ -6,6 +6,7 @@ try {
     let response = {};
     let domain = "";
     let path = "";
+    let userID = "user1";
     const worker = new Worker.Worker();
 
     // worker.createNewCollection("a/b/c");
@@ -27,17 +28,18 @@ try {
                 if (url.match(new RegExp("http[s]?\:\/\/.*", "gi"))) {
                     console.log(`valid_url: ${url}`);
                     url = new URL(url)
-                    domain = url.hostname.split('.').slice(-2).join('.');
+                    domain = url.hostname.split(".").join("<dot>"); // replace all . with <dot>
                     path = url.pathname;
+                    chatPath = `chats/${domain}${path}/${userID}`
 
-                    if (await worker.collectionExists("a/b/c")) {
+                    if (await worker.collectionExists(chatPath)) {
                         console.log("collection exists");
                     } else {
-                        console.log("collection does not exist");
+                        worker.createNewCollection(chatPath);
                     }
 
 
-                    response = { type: "new_tab", data: { domain: domain, path: path, url: url } };
+                    // response = { type: "new_tab", data: { domain: domain, path: path, url: url } };
 
                 } else {
                     console.log(`invalid_url: ${url}`)
