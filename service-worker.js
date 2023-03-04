@@ -2,31 +2,18 @@ try {
     importScripts('./dist/bundle.js');
     console.log("Loaded script successfully")
 
-
     let url = null;
     let response = {};
     let domain = "";
     let path = "";
-
-
-
-
     const worker = new Worker.Worker();
-    worker.createNewCollection("a/b/c");
-    async function Exist() {
-        if (await worker.collectionExists("a/b/c") == true) {
-            console.log("collection exists");
-        } else {
-            console.log("collection does not exist");
-        }
-    }
 
-    Exist()
+    // worker.createNewCollection("a/b/c");
 
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         if (message === 'refresh') {
             // Get the active tab in the current window.
-            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
                 try {
                     url = tabs[0].url; // string
                 } catch (e) {
@@ -42,6 +29,14 @@ try {
                     url = new URL(url)
                     domain = url.hostname.split('.').slice(-2).join('.');
                     path = url.pathname;
+
+                    if (await worker.collectionExists("a/b/c")) {
+                        console.log("collection exists");
+                    } else {
+                        console.log("collection does not exist");
+                    }
+
+
                     response = { type: "new_tab", data: { domain: domain, path: path, url: url } };
 
                 } else {

@@ -18,13 +18,9 @@ export class Worker {
     }
 
     async collectionExists(path) {
-        console.log(`check if collection exist at ${path}`)
-        console.log(`Ref : ${ref(this.db, path)}`)
+        console.log(`check if collection exist at ${path}`);
         if (path && this.db) {
             var snapshot = await get(ref(this.db, path));
-            console.log(snapshot);
-            console.log(snapshot.child("hi").val());
-            console.log(`snapshot? ${snapshot.exists()}`);
             return snapshot.exists();
         } else {
             console.log("path error or db error")
