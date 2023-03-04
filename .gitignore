@@ -4,6 +4,7 @@
 ### Custom ###
 test.*
 dist/
+package-lock.json
 
 
 ### Node ###
