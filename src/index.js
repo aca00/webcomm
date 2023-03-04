@@ -28,11 +28,39 @@ export class Worker {
         }
     }
 
+    async sendMessage(uid = "XYZ", uname = "ABC", utype = "anon", message = "", path = null) {
+        console.log(`
+            path: ${path}
+            name: ${uname}
+            utype: ${utype}
+            message: ${message}
+            uid: ${uid}
+        `);
+        if (uid) {
+            if (path && this.db) {
+                var listRef = await push(ref(this.db, path));
+                await set(listRef, {
+                    name: name,
+                    time: new Date().toISOString(),
+                    uid: uid,
+                    message: message,
+                    type: utype
+                }).catch((error) => {
+                    console.log("Error sending message", error);
+                })
+            } else {
+                console.log("path-error-while-sending-message");
+            }
+        } else {
+            console.log("user-not-registered");
+        }
+    }
+
     createNewCollection(path) {
         console.log("Calling create new collection at " + path);
         if (path && this.db) {
             var listRef = push(ref(this.db, path));
-            set(listRef, { name: "", time: new Date().toISOString(), uid: "", message: "", type: "anon" }).then(() => {
+            set(listRef, { name: "system", time: new Date().toISOString(), uid: "", message: "", type: "system" }).then(() => {
                 console.log("Created node successfully");
             }).catch((error) => {
                 console.log("Error creating node", error);
