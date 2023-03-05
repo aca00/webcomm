@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set, get, push, onChildRemoved } from "firebase/database";
+import { getDatabase, ref, set, get, push, onChildRemoved, query, orderByChild, limitToLast, onValue } from "firebase/database";
 
 const firebaseConfig = {
     apiKey: process.env.API_KEY,
@@ -54,6 +54,33 @@ export class Worker {
         } else {
             console.log("user-not-registered");
         }
+    }
+
+
+
+    async getMessages(path = null) {
+        if (path && this.db) {
+            var queryRef = query(
+                ref(this.db, path),
+                orderByChild('timestamp'),
+                limitToLast(50)
+            )
+            onValue(queryRef, (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    console.log(childSnapshot.key)
+                    console.log(childSnapshot.val())
+                    // ...
+                });
+            }, {
+                onlyOnce: true
+            });
+
+            console.log("out")
+        } else {
+            console.log("path-error");
+        }
+
+        return "{}";
     }
 
     createNewCollection(path) {

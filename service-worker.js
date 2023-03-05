@@ -8,9 +8,13 @@ try {
     let path = "";
     let userID = "user1";
     const worker = new Worker.Worker();
-    worker.sendMessage(uid = "XYZ",
-        uname = "ABC", utype = "test", message = "test-method2",
-        path = "chats/www<dot>google<dot>com/search")
+    // worker.sendMessage(uid = "XYZ",
+    //     uname = "ABC", utype = "test", message = "test-method2",
+    //     path = "chats/www<dot>google<dot>com/search")
+
+    console.log(worker.getMessages(path = "chats/www<dot>google<dot>com/search"))
+
+
 
 
 
