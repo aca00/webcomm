@@ -1,82 +1,89 @@
 try {
     importScripts('./dist/bundle.js');
-    console.log("Loaded script successfully")
-
-    let url = null;
-    let response = {};
-    let domain = "";
-    let path = "";
-    let userID = "user1";
-    const worker = new Worker.Worker();
-    // worker.sendMessage(uid = "XYZ",
-    //     uname = "ABC", utype = "test", message = "test-method2",
-    //     path = "chats/www<dot>google<dot>com/search")
-
-    async function test() {
-        var m = await worker.getMessages(path = "chats/www<dot>google<dot>com/search");
-        console.log(`
-            getMessages: ....
-            ${m}`
-        )
-        return m;
-    }
-
-    console.log(test());
-
-
-    // worker.listenToChildAdded(path ="chats/www<dot>google<dot>com/search");
-
-
-
-
-
-
-
-
-
-    // chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-    //     if (message === 'refresh') {
-    //         // Get the active tab in the current window.
-    //         chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
-    //             try {
-    //                 url = tabs[0].url; // string
-    //             } catch (e) {
-    //                 url = "";
-    //                 console.log(e);
-    //             }
-    //             if (url === undefined) {
-    //                 url = "undefined-url";
-    //                 console.log(url)
-    //             }
-    //             if (url.match(new RegExp("http[s]?\:\/\/.*", "gi"))) {
-    //                 console.log(`valid_url: ${url}`);
-    //                 url = new URL(url)
-    //                 domain = url.hostname.split(".").join("<dot>"); // replace all . with <dot>
-    //                 path = url.pathname;
-    //                 chatPath = `chats/${domain}${path}`
-
-    //                 if (await worker.collectionExists(chatPath)) {
-    //                     console.log("collection exists");
-    //                 } else {
-    //                     worker.createNewCollection(chatPath);
-    //                 }
-
-
-    //                 // response = { type: "new_tab", data: { domain: domain, path: path, url: url } };
-
-    //             } else {
-    //                 console.log(`invalid_url: ${url}`)
-    //             }
-
-
-
-    //         });
-    //         // Return true to indicate that the sendResponse callback will be called asynchronously.
-    //         sendResponse(response);
-    //         return true;
-    //     }
-    // });
-
-} catch (error) {
-    console.error('Failed:', error);
+    console.log("Script imported");
+} catch (e) {
+    console.log("couldn't import script");
 }
+
+const worker = new Worker.Worker();
+
+async function checkURL() {
+    console.log("SW: Checking url");
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs && tabs.length > 0) {
+            url = tabs[0].url;
+        } else {
+            console.log("SW: No active tab found")
+        }
+
+        if (url === undefined) {
+            url = "undefined-url";
+            console.log(url)
+        }
+
+        if (url.match(new RegExp("http[s]?\:\/\/.*", "gi"))) {
+            console.log(`SW: valid_url: ${url}`);
+            url = new URL(url)
+            domain = url.hostname.split(".").join("<dot>"); // replace all . with <dot>
+            path = url.pathname;
+            chatPath = `chats/${domain}${path}`;
+            message = {
+                type: "ack",
+                data: {
+                    type: "progress",
+                    status: 0,
+                    message: `valid chatpath${chatPath}`
+                }
+            }
+            sendToPopUp(message);
+            refreshChats(chatPath);
+        } else {
+            console.log(`invalid_url: ${url}`)
+        }
+    });
+}
+
+async function refreshChats(chatPath) {
+
+    if (await worker.collectionExists(chatPath)) {
+        console.log("collection exists");
+    } else {
+        await worker.createNewCollection(chatPath);
+    }
+    chats = await worker.getMessages(chatPath);
+    message = {
+        type: "allChats",
+        data: {
+            domain: domain,
+            path: path,
+            url: url,
+            chats: chats
+        }
+    };
+    sendToPopUp(message);
+}
+
+
+function sendToPopUp(message) {
+    console.log(`sending to popup ${message}`)
+    chrome.runtime.sendMessage(message);
+    console.log("sent to popup")
+}
+
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message === 'refresh') {
+        response = {
+            type: "ack",
+            data: {
+                type: "request-recieved",
+                status: 0,
+                message: "Refresh request recieved"
+            }
+        }
+        checkURL();
+    }
+    sendResponse(response);
+    return true;
+
+});
