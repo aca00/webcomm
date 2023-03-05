@@ -65,33 +65,40 @@ export class Worker {
         }
     }
 
-    listenToChildAdded(path) {
-        var dbRef = ref(this.db, path);
-        console.log("listen to " + path);
-        onChildAdded(dbRef, (snapshot) => {
+    listenToNewMessage(path) {
+        var lastChatRef = query(
+            ref(this.db, path),
+            orderByChild('timestamp'),
+            limitToLast(1)
+        )
+        onChildAdded(lastChatRef, (snapshot) => {
             console.log(`A new child was added with key ${snapshot.key} and data ${snapshot.val()}`);
         });
     }
 
 
-
-
     async getMessages(path = null) {
+        var lastChatKey = null;
         if (path && this.db) {
+
+            this.listenToNewMessage(path);
+
             var queryRef = query(
                 ref(this.db, path),
                 orderByChild('timestamp'),
                 limitToLast(50)
             )
-            onValue(queryRef, (snapshot) => {
+
+            onValue(queryRef, async (snapshot) => {
                 snapshot.forEach((childSnapshot) => {
-                    console.log(childSnapshot.key)
-                    console.log(childSnapshot.val())
-                    // ...
+                    lastChatKey = childSnapshot.key;
+                    console.log(childSnapshot.key);
+                    console.log(childSnapshot.val());
                 });
             }, {
                 onlyOnce: true
             });
+
 
             console.log("out")
         } else {
