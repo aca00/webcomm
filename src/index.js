@@ -78,7 +78,7 @@ export class Worker {
 
 
     async getMessages(path = null) {
-        var lastChatKey = null;
+        var messages = ["initial stuf"];
         if (path && this.db) {
 
             this.listenToNewMessage(path);
@@ -89,23 +89,32 @@ export class Worker {
                 limitToLast(50)
             )
 
-            onValue(queryRef, async (snapshot) => {
-                snapshot.forEach((childSnapshot) => {
-                    lastChatKey = childSnapshot.key;
-                    console.log(childSnapshot.key);
-                    console.log(childSnapshot.val());
+            /*
+                Since onValue is an asynchronous function, 
+                the getMessages function will not wait for these functions to complete 
+                before returning the messages array. One way to ensure that the 
+                getMessages function waits for all the messages to be retrieved is to 
+                use a Promise.
+            */
+
+            await new Promise((resolve, reject) => {
+                onValue(queryRef, async (snapshot) => {
+                    snapshot.forEach((childSnapshot) => {
+                        console.log(childSnapshot.val());
+                        messages.push(childSnapshot.val());
+                        console.log(`messages-sub: ${messages.length}`);
+                    });
+                    resolve(); // resolve the promise once the messages array is populated.
+                }, {
+                    onlyOnce: true
                 });
-            }, {
-                onlyOnce: true
             });
 
-
-            console.log("out")
         } else {
             console.log("path-error");
         }
-
-        return "{}";
+        console.log(`messages-ready-to-return: ${messages}`)
+        return messages;
     }
 
     createNewCollection(path) {

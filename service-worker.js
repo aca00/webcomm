@@ -12,7 +12,18 @@ try {
     //     uname = "ABC", utype = "test", message = "test-method2",
     //     path = "chats/www<dot>google<dot>com/search")
 
-    console.log(worker.getMessages(path = "chats/www<dot>google<dot>com/search"))
+    async function test() {
+        var m = await worker.getMessages(path = "chats/www<dot>google<dot>com/search");
+        console.log(`
+            getMessages: ....
+            ${m}`
+        )
+        return m;
+    }
+
+    console.log(test());
+
+
     // worker.listenToChildAdded(path ="chats/www<dot>google<dot>com/search");
 
 
