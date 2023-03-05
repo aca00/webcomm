@@ -1,5 +1,14 @@
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set, get, push, onChildRemoved, query, orderByChild, limitToLast, onValue } from "firebase/database";
+import {
+    getDatabase,
+    ref,
+    set,
+    get,
+    push,
+    onChildAdded,
+    query,
+    orderByChild, limitToLast, onValue
+} from "firebase/database";
 
 const firebaseConfig = {
     apiKey: process.env.API_KEY,
@@ -55,6 +64,15 @@ export class Worker {
             console.log("user-not-registered");
         }
     }
+
+    listenToChildAdded(path) {
+        var dbRef = ref(this.db, path);
+        console.log("listen to " + path);
+        onChildAdded(dbRef, (snapshot) => {
+            console.log(`A new child was added with key ${snapshot.key} and data ${snapshot.val()}`);
+        });
+    }
+
 
 
 
