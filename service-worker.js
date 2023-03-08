@@ -60,6 +60,8 @@ async function refreshChats(chatPath) {
             chats: chats
         }
     };
+
+    worker.listenToNewMessage(path);
     sendToPopUp(message);
 }
 
