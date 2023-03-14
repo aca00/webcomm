@@ -7,6 +7,8 @@ try {
 
 const worker = new Worker.Worker();
 
+worker.rate(uid = "XYZ", uname = "ABC", utype = "anon", rating = 4, path = "rating/www<dot>google<dot>com")
+
 async function checkURL() {
     console.log("SW: Checking url");
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {

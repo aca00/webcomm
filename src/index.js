@@ -49,7 +49,7 @@ export class Worker {
             if (path && this.db) {
                 var listRef = await push(ref(this.db, path));
                 await set(listRef, {
-                    name: name,
+                    name: uname,
                     time: new Date().toISOString(),
                     uid: uid,
                     message: message,
@@ -62,6 +62,26 @@ export class Worker {
             }
         } else {
             console.log("user-not-registered");
+        }
+    }
+
+    async rate(uid = "XYZ", uname = "ABC", utype = "anon", rating = -1, path = null) {
+        if (path && this.db && uid) {
+            console.log("Rating path " + path)
+            var listRef = await push(ref(this.db, path));
+            await set(listRef, {
+                name: uname,
+                time: new Date().toISOString(),
+                uid: uid,
+                rating: rating,
+                type: utype
+            }).then(() => {
+                console.log("Added rating")
+            }).catch((error) => {
+                console.log("Error while rating website", error)
+            })
+        } else {
+            console.log("Path invalid or user not registered")
         }
     }
 
