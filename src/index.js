@@ -85,6 +85,11 @@ export class Worker {
         }
     }
 
+    // TODO: Implement these functions
+    async findAverageRating() { }
+
+    async updateRating() { }
+
     listenToNewMessage(path) {
         var lastChatRef = query(
             ref(this.db, path),
