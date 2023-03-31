@@ -1,7 +1,21 @@
+function createChatBubble(chat) {
+    let chatBub = document.createElement('pre');
+    chatBub.classList.add('chat_bubble')
+    let chatContent = document.createTextNode(
+        `Message: ${chat.message}\nUserName: ${chat.name}\n${chat.time}\nType: ${chat.type}\nUID: ${chat.uid}`
+    )
+    chatBub.appendChild(chatContent)
+    return chatBub
+}
+
 function updateUI(type, args) {
     switch (type) {
         case "loadAllChats":
-            document.getElementById(args.id).textContent = (args.chats).toString();
+            let chatFrame = document.getElementById(args.id);
+            console.log(typeof (args.chats))
+            for (let i = 1; i < args.chats.length; i++) {
+                chatFrame.appendChild(createChatBubble(args.chats[i]))
+            }
             break;
         default:
             document.getElementById(args.id).textContent = "ERRO"
@@ -36,8 +50,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         }
     } else if (message.type == "allChats") {
         console.log("POPUP: receive all chats");
+        console.log(message.data.chats)
         updateUI("loadAllChats", {
-            id: "para",
+            id: "msg_res",
             chats: message.data.chats
         });
     }
