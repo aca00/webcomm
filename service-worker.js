@@ -5,9 +5,7 @@ try {
     console.log("couldn't import script");
 }
 
-const worker = new Worker.Worker();
-
-worker.rate(uid = "XYZ", uname = "ABC", utype = "anon", rating = 4, path = "rating/www<dot>google<dot>com")
+const worker = new Worker.Worker()
 
 async function checkURL() {
     console.log("SW: Checking url");
@@ -67,6 +65,9 @@ async function refreshChats(chatPath) {
     sendToPopUp(message);
 }
 
+async function userExists() {
+
+}
 
 function sendToPopUp(message) {
     console.log(`sending to popup ${message}`)
@@ -74,6 +75,32 @@ function sendToPopUp(message) {
     console.log("sent to popup")
 }
 
+async function writeToChromeStorage(object) {
+    await chrome.storage.local.set(object).then(() => {
+        console.log("SW: wrote to storage " + object)
+    })
+}
+
+async function createUser() {
+    await chrome.storage.local.get(["userDetails"]).then(async (result) => {
+        let uname = result.userDetails.uname
+        if (uname == undefined) { // create new user profile
+            let randomNumber = Math.floor(Math.random() * 9000) + 1000; // between 1000-9999
+            uname = `Anon${randomNumber}`;
+            await writeToChromeStorage({ userDetails: { uname: uname } })
+        }
+        console.log("SW: uname: " + uname)
+        return uname
+    });
+}
+
+createUser()
+
+// chrome.runtime.oninstalled.addListener(() => {
+//     // create user profile
+//     console.log("SW: Oninstall called");
+//     createUser();
+// });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message === 'refresh') {
