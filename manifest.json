@@ -5,7 +5,8 @@
     "description": "",
     "permissions": [
         "tabs",
-        "nativeMessaging"
+        "nativeMessaging",
+        "storage"
     ],
     "minimum_chrome_version": "93",
     "background": {
