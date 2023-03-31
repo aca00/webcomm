@@ -103,7 +103,7 @@ export class Worker {
 
 
     async getMessages(path = null) {
-        var messages = ["initial stuf"];
+        var messages = ["START"];
         if (path && this.db) {
 
             this.listenToNewMessage(path);
