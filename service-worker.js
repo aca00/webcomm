@@ -94,13 +94,10 @@ async function createUser() {
     });
 }
 
-createUser()
-
-// chrome.runtime.oninstalled.addListener(() => {
-//     // create user profile
-//     console.log("SW: Oninstall called");
-//     createUser();
-// });
+chrome.runtime.onInstalled.addListener(() => {
+    console.log("SW: Oninstall called");
+    createUser();
+});
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message === 'refresh') {
