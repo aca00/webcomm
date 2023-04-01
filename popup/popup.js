@@ -1,11 +1,14 @@
+var msgCount = 0;
+
 function createChatBubble(chat) {
     let chatBub = document.createElement('pre');
-    chatBub.classList.add('chat_bubble')
+    chatBub.classList.add('chat_bubble');
+    chatBub.setAttribute('id', `m${msgCount++}`);
     let chatContent = document.createTextNode(
-        `Message: ${chat.message}\nUserName: ${chat.name}\n${chat.time}\nType: ${chat.type}\nUID: ${chat.uid}`
-    )
-    chatBub.appendChild(chatContent)
-    return chatBub
+        `Message: ${chat.message}\nUserName: ${chat.name}\nTimestamp: ${chat.time}\nType: ${chat.type}\nUID: ${chat.uid}\nMsgCount: ${msgCount}`
+    );
+    chatBub.appendChild(chatContent);
+    return chatBub;
 }
 
 function updateUI(type, args) {
@@ -21,8 +24,11 @@ function updateUI(type, args) {
             chatFrame.appendChild(createChatBubble(args.chat));
             break;
         default:
-            document.getElementById(args.id).textContent = "ERRO"
+            document.getElementById(args.id).textContent = "ERRO";
     }
+}
+
+function send() {
 
 }
 
