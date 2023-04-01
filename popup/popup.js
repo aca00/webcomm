@@ -1,4 +1,6 @@
 var msgCount = 0;
+var txtbox = document.getElementById('tbox');
+var sendButton = document.getElementById('myButton');
 
 function createChatBubble(chat) {
     let chatBub = document.createElement('pre');
@@ -31,7 +33,6 @@ function updateUI(type, args) {
 function send() {
 
 }
-
 
 chrome.runtime.sendMessage('refresh', (response) => {
     console.log("response")
@@ -72,4 +73,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         console.log(message.data)
     }
 
+});
+
+sendButton.addEventListener('click', () => {
+    console.log("POPUP: Button clicked")
+    let text = txtbox.value;
+    if (text == '') {
+        console.log("POPUP: Type something")
+    } else {
+        console.log(text);
+    }
 });
