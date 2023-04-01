@@ -100,7 +100,7 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message === 'refresh') {
+    if (message.type === 'refresh') {
         response = {
             type: "ack",
             data: {
