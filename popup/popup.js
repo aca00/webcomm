@@ -107,7 +107,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             chat: message.data
         })
         console.log(message)
-    } else if (message.type == 'sent-message') {
+    } else if (message.type == 'message-sent') {
         console.log(`POPUP: Message sent count: ${message.data.msgCount}`);
         // updateUI("updateStatus", {
         //     id: `m${message.data.msgCount}`,

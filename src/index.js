@@ -63,8 +63,9 @@ export class Worker {
                     console.log(`INDEX: New message added msg_count: ${msgCount}`)
                     if (msgCount) {
                         chrome.runtime.sendMessage({
-                            type: "sent-message",
+                            type: "message-sent",
                             data: {
+                                msgID: listRef.key,
                                 msgCount: msgCount,
                                 uid: uid,
                                 time: time,
