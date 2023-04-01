@@ -9,18 +9,19 @@ function createChatBubble(chat) {
 }
 
 function updateUI(type, args) {
+    let chatFrame = document.getElementById(args.id);
     switch (type) {
         case "loadAllChats":
-            let chatFrame = document.getElementById(args.id);
-            console.log(typeof (args.chats))
             for (let i = 1; i < args.chats.length; i++) {
                 chatFrame.appendChild(createChatBubble(args.chats[i]))
             }
             break;
+        case "newMessage":
+            console.log("POPUP: Appending new child " + args.chat.name)
+            chatFrame.appendChild(createChatBubble(args.chat));
+            break;
         default:
             document.getElementById(args.id).textContent = "ERRO"
-
-
     }
 
 }
@@ -55,6 +56,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             id: "msg_res",
             chats: message.data.chats
         });
+    } else if (message.type == 'child-added') {
+        console.log("POPUP: Child added at index")
+        updateUI("newMessage", {
+            id: "msg_res",
+            chat: message.data
+        })
+        console.log(message)
+        console.log(message.data)
     }
 
 });
