@@ -37,31 +37,52 @@ export class Worker {
         }
     }
 
-    async sendMessage(uid = "XYZ", uname = "ABC", utype = "anon", message = "", path = null) {
-        console.log(`
+    async sendMessage(uid = "XYZ", uname = "ABC", utype = "anon", message = "", path = null, msgCount = null, time = null) {
+        console.log("INDEX: Adding new message");
+        console.log(`INDEX:
             path: ${path}
             name: ${uname}
             utype: ${utype}
             message: ${message}
             uid: ${uid}
         `);
+        if (!time) {
+            time = new Date().toISOString();
+        }
         if (uid) {
+            console.log("INDEX: uid valid")
             if (path && this.db) {
                 var listRef = await push(ref(this.db, path));
                 await set(listRef, {
                     name: uname,
-                    time: new Date().toISOString(),
+                    time: time,
                     uid: uid,
                     message: message,
                     type: utype
+                }).then(() => {
+                    console.log(`INDEX: New message added msg_count: ${msgCount}`)
+                    if (msgCount) {
+                        chrome.runtime.sendMessage({
+                            type: "sent-message",
+                            data: {
+                                msgCount: msgCount,
+                                uid: uid,
+                                time: time,
+                                name: uname,
+                                type: utype,
+                                message: message,
+                                status: "sent"
+                            }
+                        });
+                    }
                 }).catch((error) => {
-                    console.log("Error sending message", error);
+                    console.log("INDEX: Error sending message", error);
                 })
             } else {
-                console.log("path-error-while-sending-message");
+                console.log("INDEX: path-error-while-sending-message");
             }
         } else {
-            console.log("user-not-registered");
+            console.log("INDEX: user-not-registered");
         }
     }
 
@@ -93,12 +114,12 @@ export class Worker {
     listenToNewMessage(path) {
         var lastChatRef = query(
             ref(this.db, path),
-            orderByChild('timestamp'),
+            orderByChild('time'), // doubtful
             limitToLast(1)
         )
         onChildAdded(lastChatRef, (snapshot) => {
             chrome.runtime.sendMessage({ type: "child-added", data: snapshot.val() });
-            console.log(`A new child was added with key ${snapshot.key} and data ${snapshot.val()}`);
+            console.log(`INDEX: A new child was added with key ${snapshot.key} and data ${snapshot.val()}`);
         });
     }
 

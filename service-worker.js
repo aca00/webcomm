@@ -1,3 +1,6 @@
+var userName = null;
+var currURL = null;
+
 try {
     importScripts('./dist/bundle.js');
     console.log("Script imported");
@@ -27,6 +30,7 @@ async function checkURL() {
             domain = url.hostname.split(".").join("<dot>"); // replace all . with <dot>
             path = url.pathname;
             chatPath = `chats/${domain}${path}`;
+            currURL = chatPath;
             message = {
                 type: "ack",
                 data: {
@@ -65,14 +69,34 @@ async function refreshChats(chatPath) {
     sendToPopUp(message);
 }
 
-async function userExists() {
+async function getUserDetails() {
+    if (!userName) {
+        await chrome.storage.local.get(["userDetails"]).then(async (result) => {
+            userName = result.userDetails.uname;
+            if (userName == undefined) {
+                await createUser();
+            }
+        });
+    }
+}
 
+async function sendNewMessage(data) {
+    //uid = "XYZ", uname = "ABC", utype = "anon", message = "", path = null, msgCount = null, time = null
+    await getUserDetails();
+    worker.sendMessage(
+        uid = "XYZ",
+        uname = userName,
+        utype = 'Anon',
+        message = data.message,
+        path = currURL,
+        msgCount = data.msgCount,
+        time = data.time,
+    );
 }
 
 function sendToPopUp(message) {
     console.log(`sending to popup ${message}`)
     chrome.runtime.sendMessage(message);
-    console.log("sent to popup")
 }
 
 async function writeToChromeStorage(object) {
@@ -83,7 +107,8 @@ async function writeToChromeStorage(object) {
 
 async function createUser() {
     await chrome.storage.local.get(["userDetails"]).then(async (result) => {
-        let uname = result.userDetails.uname
+        let uname = result.userDetails.uname;
+        userName = uname;
         if (uname == undefined) { // create new user profile
             let randomNumber = Math.floor(Math.random() * 9000) + 1000; // between 1000-9999
             uname = `Anon${randomNumber}`;
@@ -100,7 +125,7 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.type === 'refresh') {
+    if (message.type == 'refresh') {
         response = {
             type: "ack",
             data: {
@@ -110,6 +135,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             }
         }
         checkURL();
+    } else if (message.type == "send-message") {
+        console.log("SW: send message request received")
+        sendNewMessage(message.data)
+        response = {
+            type: "ack",
+            data: {
+                type: "message-submitted",
+                status: 0,
+                message: "New message submitted"
+            }
+        }
     }
     sendResponse(response);
     return true;

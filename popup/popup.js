@@ -2,12 +2,13 @@ var msgCount = 0;
 var txtbox = document.getElementById('tbox');
 var sendButton = document.getElementById('myButton');
 
-function createChatBubble(chat) {
+function createChatBubble(chat, counter) {
+    console.log(`POPUP: New message count: ${counter}`)
     let chatBub = document.createElement('pre');
     chatBub.classList.add('chat_bubble');
-    chatBub.setAttribute('id', `m${msgCount++}`);
+    chatBub.setAttribute('id', `m${counter}`);
     let chatContent = document.createTextNode(
-        `Message: ${chat.message}\nUserName: ${chat.name}\nTimestamp: ${chat.time}\nType: ${chat.type}\nUID: ${chat.uid}\nMsgCount: ${msgCount}`
+        `Message: ${chat.message}\nUserName: ${chat.name}\nTimestamp: ${chat.time}\nType: ${chat.type}\nUID: ${chat.uid}\nStatus: ${chat.status}\nMsgCount: ${msgCount}`
     );
     chatBub.appendChild(chatContent);
     return chatBub;
@@ -18,28 +19,64 @@ function updateUI(type, args) {
     switch (type) {
         case "loadAllChats":
             for (let i = 1; i < args.chats.length; i++) {
-                chatFrame.appendChild(createChatBubble(args.chats[i]))
+                chatFrame.appendChild(createChatBubble(args.chats[i]), msgCount++)
             }
             break;
         case "newMessage":
-            console.log("POPUP: Appending new child " + args.chat.name)
-            chatFrame.appendChild(createChatBubble(args.chat));
+            console.log("POPUP: Appending new child by listener " + args.chat.name)
+            chatFrame.appendChild(createChatBubble(args.chat), msgCount++);
             break;
+        case "sendMessage":
+            chatFrame.appendChild(createChatBubble(args.chat), args.chat.msgCount);
+            break;
+
+        case "updateStatus":
+            console.log(`POPUP bubble id: ${args.id}`)
+            let chatBubble = document.getElementById(args.id);
+            console.log("POPUP: Inside update Status");
+            if (chatBubble) {
+                chatBubble.textContent = `Message: ${args.message}\nUserName: ${args.name}\nTimestamp: ${args.time}\nType: ${args.type}\nUID: ${args.uid}\nStatus: ${args.status}\nMsgCount: ${args.msgCount}`;
+            }
+            break;
+
         default:
             document.getElementById(args.id).textContent = "ERRO";
+
     }
 }
 
-function send() {
+function send(text) {
+    let currTime = new Date().toISOString();
+    // let mcount = msgCount++;
+    // updateUI("sendMessage", {
+    //     id: "msg_res",
+    //     chat: {
+    //         message: text,
+    //         time: currTime,
+    //         name: "You",
+    //         status: "Sending",
+    //         msgCount: mcount
+    //     }
+    // });
 
+    chrome.runtime.sendMessage(
+        {
+            type: "send-message",
+            data: {
+                message: text,
+                time: currTime,
+                msgCount: msgCount
+            }
+        }
+    )
 }
 
-chrome.runtime.sendMessage('refresh', (response) => {
+chrome.runtime.sendMessage({ type: "refresh" }, (response) => {
     console.log("response")
 
-    const urlText = document.getElementById('para');
+    // const urlText = document.getElementById('para');
 
-    urlText.textContent = response.data.msg;
+    // urlText.textContent = response.data.msg;
 
     console.log(`
         response to popup.js
@@ -70,7 +107,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             chat: message.data
         })
         console.log(message)
-        console.log(message.data)
+    } else if (message.type == 'sent-message') {
+        console.log(`POPUP: Message sent count: ${message.data.msgCount}`);
+        // updateUI("updateStatus", {
+        //     id: `m${message.data.msgCount}`,
+        //     data: message.data
+        // })
     }
 
 });
@@ -81,6 +123,7 @@ sendButton.addEventListener('click', () => {
     if (text == '') {
         console.log("POPUP: Type something")
     } else {
-        console.log(text);
+        console.log(`POPUP: Message to send: ${text}`);
+        send(text);
     }
 });
