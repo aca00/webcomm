@@ -64,9 +64,6 @@ async function refreshChats(chatPath) {
             chats: chats
         }
     };
-
-    worker.listenToNewMessage(path);
-    sendToPopUp(message);
 }
 
 async function getUserDetails() {
@@ -81,7 +78,6 @@ async function getUserDetails() {
 }
 
 async function sendNewMessage(data) {
-    //uid = "XYZ", uname = "ABC", utype = "anon", message = "", path = null, msgCount = null, time = null
     await getUserDetails();
     worker.sendMessage(
         uid = "XYZ",

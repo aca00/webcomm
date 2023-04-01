@@ -112,11 +112,12 @@ export class Worker {
 
     async updateRating() { }
 
-    listenToNewMessage(path) {
+    async listenToNewMessage(path) {
+        console.log("INDEX: listening")
         var lastChatRef = query(
             ref(this.db, path),
             orderByChild('time'), // doubtful
-            limitToLast(1)
+            limitToLast(50)
         )
         onChildAdded(lastChatRef, (snapshot) => {
             chrome.runtime.sendMessage({ type: "child-added", data: snapshot.val() });
@@ -128,36 +129,8 @@ export class Worker {
     async getMessages(path = null) {
         var messages = ["START"];
         if (path && this.db) {
-
             this.listenToNewMessage(path);
-
-            var queryRef = query(
-                ref(this.db, path),
-                orderByChild('timestamp'),
-                limitToLast(50)
-            )
-
-            /*
-                Since onValue is an asynchronous function, 
-                the getMessages function will not wait for these functions to complete 
-                before returning the messages array. One way to ensure that the 
-                getMessages function waits for all the messages to be retrieved is to 
-                use a Promise.
-            */
-
-            await new Promise((resolve, reject) => {
-                onValue(queryRef, async (snapshot) => {
-                    snapshot.forEach((childSnapshot) => {
-                        console.log(childSnapshot.val());
-                        messages.push(childSnapshot.val());
-                        console.log(`INDEX: messages-sub: ${messages.length}`);
-                    });
-                    resolve(); // resolve the promise once the messages array is populated.
-                }, {
-                    onlyOnce: true
-                });
-            });
-
+            return null
         } else {
             console.log("path-error");
         }
