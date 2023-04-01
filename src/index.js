@@ -97,6 +97,7 @@ export class Worker {
             limitToLast(1)
         )
         onChildAdded(lastChatRef, (snapshot) => {
+            chrome.runtime.sendMessage({ type: "child-added", data: snapshot.val() });
             console.log(`A new child was added with key ${snapshot.key} and data ${snapshot.val()}`);
         });
     }
@@ -127,7 +128,7 @@ export class Worker {
                     snapshot.forEach((childSnapshot) => {
                         console.log(childSnapshot.val());
                         messages.push(childSnapshot.val());
-                        console.log(`messages-sub: ${messages.length}`);
+                        console.log(`INDEX: messages-sub: ${messages.length}`);
                     });
                     resolve(); // resolve the promise once the messages array is populated.
                 }, {
