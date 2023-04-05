@@ -28,8 +28,8 @@ async function checkURL() {
             console.log(`SW: valid_url: ${url}`);
             url = new URL(url)
             domain = url.hostname.split(".").join("<dot>"); // replace all . with <dot>
-            path = url.pathname;
-            chatPath = `chats/${domain}${path}`;
+            path = url.pathname.split("/").join("<sep>"); // replace al / with <sep>
+            chatPath = `chats/${domain}/${path}`;
             currURL = chatPath;
             message = {
                 type: "ack",
