@@ -1,4 +1,5 @@
 var userName = null;
+var uid = null;
 var currURL = null;
 
 try {
@@ -103,15 +104,21 @@ async function writeToChromeStorage(object) {
 
 async function createUser() {
     await chrome.storage.local.get(["userDetails"]).then(async (result) => {
-        let uname = result.userDetails.uname;
-        userName = uname;
-        if (uname == undefined) { // create new user profile
+        if (result.userDetails == undefined) { // create new user profile
             let randomNumber = Math.floor(Math.random() * 9000) + 1000; // between 1000-9999
-            uname = `Anon${randomNumber}`;
-            await writeToChromeStorage({ userDetails: { uname: uname } })
+            userName = `Anon${randomNumber}`;
+            uid = await worker.createUID(userName)
+            console.log(`SW: Writing to chome storgae ${userName} and ${uid}`)
+            if (userName && uid) {
+                await writeToChromeStorage({ userDetails: { uname: userName, uid: uid } })
+            }
+
+        } else {
+            uid = result.userDetails.uid;
+            userName = result.userDetails.uname;
         }
-        console.log("SW: uname: " + uname)
-        return uname
+        console.log(`SW: User details exist: ${userName} ${uid}`)
+        return userName
     });
 }
 
