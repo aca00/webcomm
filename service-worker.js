@@ -81,7 +81,7 @@ async function getUserDetails() {
 async function sendNewMessage(data) {
     await getUserDetails();
     worker.sendMessage(
-        uid = "XYZ",
+        uid = uid,
         uname = userName,
         utype = 'Anon',
         message = data.message,
