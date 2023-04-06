@@ -38,6 +38,9 @@ function updateUI(type, args) {
                 chatBubble.textContent = `Message: ${args.message}\nUserName: ${args.name}\nTimestamp: ${args.time}\nType: ${args.type}\nUID: ${args.uid}\nStatus: ${args.status}\nMsgCount: ${args.msgCount}`;
             }
             break;
+        case "rating":
+            chatFrame.innerHTML = `<pre>Rate value: ${args.rateVal}</pre>`
+            break;
 
         default:
             document.getElementById(args.id).textContent = "ERRO";
@@ -69,6 +72,15 @@ function send(text) {
             }
         }
     )
+}
+
+function rate(text) {
+    let rateVal = Number(text);
+    if (isNaN(rateVal)) {
+        console.log("POPUP: Not a number");
+    } else {
+        chrome.runtime.sendMessage({ type: "rate-website", data: { rateVal: rateVal } })
+    }
 }
 
 chrome.runtime.sendMessage({ type: "refresh" }, (response) => {
@@ -106,13 +118,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             id: "msg_res",
             chat: message.data
         })
-        console.log(message)
+        console.log(message);
     } else if (message.type == 'message-sent') {
         console.log(`POPUP: Message sent count: ${message.data.msgCount}`);
         // updateUI("updateStatus", {
         //     id: `m${message.data.msgCount}`,
         //     data: message.data
         // })
+    } else if (message.type == "rating") {
+        console.log(`POPUP: rate value: ${message.data.rateVal}`)
+        updateUI("rating", {
+            id: "rate_res",
+            rateVal: message.data.rateVal
+        })
     }
 
 });
@@ -124,6 +142,7 @@ sendButton.addEventListener('click', () => {
         console.log("POPUP: Type something")
     } else {
         console.log(`POPUP: Message to send: ${text}`);
-        send(text);
+        // send(text);
+        rate(text);
     }
 });

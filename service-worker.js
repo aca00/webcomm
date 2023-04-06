@@ -1,6 +1,7 @@
 var userName = null;
 var uid = null;
 var currURL = null;
+var rateVal = null;
 
 try {
     importScripts('./dist/bundle.js');
@@ -40,7 +41,7 @@ async function checkURL() {
                     message: `valid chatpath${chatPath}`
                 }
             }
-            worker.rate(0, `userRating/${uid}/${currURL}`);
+            getRating();
             sendToPopUp(message);
             refreshChats(chatPath);
         } else {
@@ -66,6 +67,11 @@ async function refreshChats(chatPath) {
             chats: chats
         }
     };
+}
+
+async function getRating(rateVal = 0) {
+    rateVal = await worker.rate(rateVal, `userRating/${uid}/${currURL}`);
+    sendToPopUp({ type: "rating", data: { rateVal: rateVal } });
 }
 
 async function getUserDetails() {
@@ -161,7 +167,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         }
     } else if (message.type == "rate-website") {
         console.log(`SW: rate request received ${message.data.rateVal}`);
-        rateWebsite(message.data.rateVal);
+        getRating(message.data.rateVal);
     }
     sendResponse(response);
     return true;
