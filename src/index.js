@@ -107,16 +107,13 @@ export class Worker {
         }
     }
 
-    async rate(uid = "XYZ", uname = "ABC", utype = "anon", rating = -1, path = null) {
+    async rate(rateVal = -1, path = null) {
         if (path && this.db && uid) {
             console.log("Rating path " + path)
-            var listRef = await push(ref(this.db, path));
+            var listRef = ref(this.db, path);
             await set(listRef, {
-                name: uname,
                 time: new Date().toISOString(),
-                uid: uid,
-                rating: rating,
-                type: utype
+                rateVal: rateVal,
             }).then(() => {
                 console.log("Added rating")
             }).catch((error) => {

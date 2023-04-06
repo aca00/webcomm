@@ -30,8 +30,8 @@ async function checkURL() {
             url = new URL(url)
             domain = url.hostname.split(".").join("<dot>"); // replace all . with <dot>
             path = url.pathname.split("/").join("<sep>"); // replace al / with <sep>
-            chatPath = `chats/${domain}/${path}`;
-            currURL = chatPath;
+            currURL = `${domain}/${path}`;
+            chatPath = `chats/${currURL}`;
             message = {
                 type: "ack",
                 data: {
@@ -40,6 +40,7 @@ async function checkURL() {
                     message: `valid chatpath${chatPath}`
                 }
             }
+            worker.rate(-1, `userRating/${uid}/${currURL}`);
             sendToPopUp(message);
             refreshChats(chatPath);
         } else {
@@ -90,6 +91,15 @@ async function sendNewMessage(data) {
         time = data.time,
     );
 }
+
+// async function rateWebsite(rateVal, domain, path) {
+//     await worker.rate(
+//         uid = uid,
+//         uname = userName,
+//         utype = "anon",
+//         rating = rateVal,
+//         path = `user_rating/${uid}/${domain}/${path}`)
+// }
 
 function sendToPopUp(message) {
     console.log(`sending to popup ${message}`)
@@ -149,6 +159,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 message: "New message submitted"
             }
         }
+    } else if (message.type == "rate-website") {
+        console.log(`SW: rate request received ${message.data.rateVal}`);
+        rateWebsite(message.data.rateVal);
     }
     sendResponse(response);
     return true;
