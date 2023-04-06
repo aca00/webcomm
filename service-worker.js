@@ -40,7 +40,7 @@ async function checkURL() {
                     message: `valid chatpath${chatPath}`
                 }
             }
-            worker.rate(-1, `userRating/${uid}/${currURL}`);
+            worker.rate(0, `userRating/${uid}/${currURL}`);
             sendToPopUp(message);
             refreshChats(chatPath);
         } else {

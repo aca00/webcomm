@@ -4,6 +4,7 @@ import {
     ref,
     set,
     get,
+    remove,
     push,
     onChildAdded,
     query,
@@ -107,18 +108,36 @@ export class Worker {
         }
     }
 
-    async rate(rateVal = -1, path = null) {
+    async rate(rateVal = 0, path = null) {
         if (path && this.db && uid) {
             console.log("Rating path " + path)
             var listRef = ref(this.db, path);
-            await set(listRef, {
-                time: new Date().toISOString(),
-                rateVal: rateVal,
-            }).then(() => {
-                console.log("Added rating")
-            }).catch((error) => {
-                console.log("Error while rating website", error)
-            })
+
+            if (rateVal == 0) { // get status without updating
+                console.log("INDEX: Inside 0");
+                var snapshot = await get(ref(this.db, path));
+                if (snapshot.exists()) {
+                    console.log("INDEX: Snapshot exists")
+                    console.log(`INDEX: Already rated: ${snapshot.val().rateVal}`);
+                    return snapshot.val().rateVal;
+                } else {
+                    return 0; // unrated website
+                }
+            } else if (rateVal == -1) { // remove rating
+                await remove(listRef).then(() => {
+                    console.log(`INDEX: Removed rating from ${path}`);
+                })
+            } else { // update rating
+                await set(listRef, {
+                    time: new Date().toISOString(),
+                    rateVal: rateVal,
+                }).then(() => {
+                    console.log("Added rating")
+                }).catch((error) => {
+                    console.log("Error while rating website", error)
+                });
+            }
+            return rateVal;
         } else {
             console.log("Path invalid or user not registered")
         }
