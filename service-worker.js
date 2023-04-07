@@ -92,7 +92,7 @@ async function sendNewMessage(data) {
         uname = userName,
         utype = 'Anon',
         message = data.message,
-        path = currURL,
+        path = `chats/${currURL}`,
         msgCount = data.msgCount,
         time = data.time,
     );

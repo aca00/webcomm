@@ -142,7 +142,7 @@ sendButton.addEventListener('click', () => {
         console.log("POPUP: Type something")
     } else {
         console.log(`POPUP: Message to send: ${text}`);
-        // send(text);
-        rate(text);
+        send(text);
+        // rate(text);
     }
 });
