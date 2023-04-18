@@ -50,17 +50,6 @@ function updateUI(type, args) {
 
 function send(text) {
     let currTime = new Date().toISOString();
-    // let mcount = msgCount++;
-    // updateUI("sendMessage", {
-    //     id: "msg_res",
-    //     chat: {
-    //         message: text,
-    //         time: currTime,
-    //         name: "You",
-    //         status: "Sending",
-    //         msgCount: mcount
-    //     }
-    // });
 
     chrome.runtime.sendMessage(
         {
@@ -121,10 +110,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         console.log(message);
     } else if (message.type == 'message-sent') {
         console.log(`POPUP: Message sent count: ${message.data.msgCount}`);
-        // updateUI("updateStatus", {
-        //     id: `m${message.data.msgCount}`,
-        //     data: message.data
-        // })
+
     } else if (message.type == "rating") {
         console.log(`POPUP: rate value: ${message.data.rateVal}`)
         updateUI("rating", {
