@@ -41,26 +41,6 @@ export class Worker {
         }
     }
 
-    async createUID(uname) {
-        let path = "user_details/";
-        console.log(`INDEX: Creating UID for ${uname}
-            path: ${path}
-        `);
-        if (uname) {
-            var listRef = await push(ref(this.db, path));
-            var uid = listRef.key
-            await set(listRef, {
-                name: uname,
-                created_on: new Date().toISOString()
-            }).then(() => {
-                console.log(`INDEX: UID created ${listRef.key}`);
-            }).catch((err) => {
-                console.log(err);
-            });
-            return uid;
-        }
-    }
-
     async sendMessage(uid = "XYZ", uname = "ABC", utype = "anon", message = "", path = null, msgCount = null, time = null) {
         console.log("INDEX: Adding new message");
         console.log(`INDEX:
@@ -145,11 +125,6 @@ export class Worker {
             console.log("Path invalid or user not registered")
         }
     }
-
-    // TODO: Implement these functions
-    async findAverageRating() { }
-
-    async updateRating() { }
 
     async listenToNewMessage(path) {
         console.log("INDEX: listening")

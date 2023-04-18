@@ -12,8 +12,6 @@ try {
 
 const worker = new Worker.Worker();
 
-worker.signIn();
-
 async function checkURL() {
     console.log("SW: Checking url");
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -99,15 +97,6 @@ async function sendNewMessage(data) {
         time = data.time,
     );
 }
-
-// async function rateWebsite(rateVal, domain, path) {
-//     await worker.rate(
-//         uid = uid,
-//         uname = userName,
-//         utype = "anon",
-//         rating = rateVal,
-//         path = `user_rating/${uid}/${domain}/${path}`)
-// }
 
 function sendToPopUp(message) {
     console.log(`sending to popup ${message}`)
