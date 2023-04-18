@@ -10,7 +10,9 @@ try {
     console.log("couldn't import script");
 }
 
-const worker = new Worker.Worker()
+const worker = new Worker.Worker();
+
+worker.signIn();
 
 async function checkURL() {
     console.log("SW: Checking url");
@@ -112,6 +114,11 @@ function sendToPopUp(message) {
     chrome.runtime.sendMessage(message);
 }
 
+function createRandomUserName() {
+    let randomNumber = Math.floor(Math.random() * 9000) + 1000; // between 1000-9999
+    return `User${randomNumber}`;
+}
+
 async function writeToChromeStorage(object) {
     await chrome.storage.local.set(object).then(() => {
         console.log("SW: wrote to storage " + object)
@@ -121,9 +128,8 @@ async function writeToChromeStorage(object) {
 async function createUser() {
     await chrome.storage.local.get(["userDetails"]).then(async (result) => {
         if (result.userDetails == undefined) { // create new user profile
-            let randomNumber = Math.floor(Math.random() * 9000) + 1000; // between 1000-9999
-            userName = `Anon${randomNumber}`;
-            uid = await worker.createUID(userName)
+            userName = createRandomUserName();
+            uid = await worker.signIn()
             console.log(`SW: Writing to chome storgae ${userName} and ${uid}`)
             if (userName && uid) {
                 await writeToChromeStorage({ userDetails: { uname: userName, uid: uid } })

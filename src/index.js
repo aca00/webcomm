@@ -11,6 +11,9 @@ import {
     orderByChild, limitToLast, onValue
 } from "firebase/database";
 
+import { getAuth, signInWithRedirect, GoogleAuthProvider, signInAnonymously } from "firebase/auth";
+
+
 const firebaseConfig = {
     apiKey: process.env.API_KEY,
     authDomain: process.env.AUTH_DOMAIN,
@@ -172,6 +175,19 @@ export class Worker {
         }
         console.log(`messages-ready-to-return: ${messages}`)
         return messages;
+    }
+
+    async signIn() {
+        const auth = getAuth();
+        await signInAnonymously(auth)
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                return -1;
+            });
+        console.log(`INDEX: Signed up anonymously ${auth.currentUser.uid}`);
+        return auth.currentUser.uid;
+
     }
 
     createNewCollection(path) {
