@@ -52,6 +52,8 @@ async function authenticate() {
             }
 
             isAuthenticated = true;
+            console.log("SW: Auth: ");
+            console.log(worker.auth);
         }
     });
 
@@ -59,7 +61,7 @@ async function authenticate() {
 
 // email = "akhilca@gmail.com", password = "123abcdre"
 
-// signUp(email = "akhilca@gmail.com", password = "123abcdre")
+signUp(email = "akhilcadd@gmail.com", password = "123abcdre")
 
 async function signIn(email = null, password = null) {
     let temp_cred = await worker.signInWithEmail(email, password);
@@ -84,9 +86,14 @@ async function removeAnon() {
 }
 
 async function signUp(email = null, password = null, name = null) {
+    // if (worker.auth.currentUser == undefined) {
 
+    // }
+    console.log("Auth at up")
+    console.log(worker.auth)
+    await worker.signOff();
     let temp_cred = await worker.signUpWithEmail(email = email, password = password);
-    if (temp_cred != 0 || temp_cred != -1 || temp_cred != undefined) {
+    if (temp_cred != 0 && temp_cred != -1 && temp_cred != undefined) {
         utype = "Signed";
         cred = temp_cred;
         await worker.updateUserProfile(cred.user, { displayName: createRandomUserName() })

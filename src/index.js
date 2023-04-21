@@ -170,8 +170,7 @@ export class Worker {
     async signOff() {
         console.log("INDEX: singnoff called");
         console.log(this.auth);
-        console.log(this.auth.currentUser)
-        await this.auth.signOut().catch((err) => {
+        await signOut(this.auth).then(() => { console.log("Signed out") }).catch((err) => {
             console.log(`INDEX: signOut: ${err}`)
         });
     }
