@@ -17,6 +17,7 @@ import {
     signInWithEmailAndPassword,
     signInAnonymously,
     signInWithCredential,
+    sendEmailVerification,
     createUserWithEmailAndPassword,
     updateProfile
 } from "firebase/auth";
@@ -164,6 +165,15 @@ export class Worker {
         onChildAdded(lastChatRef, (snapshot) => {
             chrome.runtime.sendMessage({ type: "child-added", data: snapshot.val() });
             console.log(`INDEX: A new child was added with key ${snapshot.key} and data ${snapshot.val()}`);
+        });
+    }
+
+    async verifyEmail() {
+        console.log("INDEX: Sending email verification")
+        await sendEmailVerification(this.auth.currentUser).then(() => {
+            console.log("EMAil verificagtion sent")
+        }).catch((err) => {
+            console.log(`INDEX: verifyEmail: ${err.message}`);
         });
     }
 

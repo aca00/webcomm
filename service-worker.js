@@ -54,14 +54,16 @@ async function authenticate() {
             isAuthenticated = true;
             console.log("SW: Auth: ");
             console.log(worker.auth);
+            if (!worker.auth.currentUser.emailVerified) {
+                await worker.verifyEmail();
+            }
         }
     });
 
 }
 
 // email = "akhilca@gmail.com", password = "123abcdre"
-
-signUp(email = "akhilcadd@gmail.com", password = "123abcdre")
+signUp(email = "akhilca2000@gmail.com", password = "123abcdre")
 
 async function signIn(email = null, password = null) {
     let temp_cred = await worker.signInWithEmail(email, password);
@@ -81,17 +83,8 @@ async function signIn(email = null, password = null) {
     return cred;
 }
 
-async function removeAnon() {
-
-}
-
 async function signUp(email = null, password = null, name = null) {
-    // if (worker.auth.currentUser == undefined) {
-
-    // }
-    console.log("Auth at up")
-    console.log(worker.auth)
-    await worker.signOff();
+    // await worker.signOff();
     let temp_cred = await worker.signUpWithEmail(email = email, password = password);
     if (temp_cred != 0 && temp_cred != -1 && temp_cred != undefined) {
         utype = "Signed";
