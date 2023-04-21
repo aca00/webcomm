@@ -19,7 +19,8 @@ import {
     signInWithCredential,
     sendEmailVerification,
     createUserWithEmailAndPassword,
-    updateProfile
+    updateProfile,
+    sendPasswordResetEmail
 } from "firebase/auth";
 
 
@@ -255,6 +256,12 @@ export class Worker {
         console.log(`INDEX: Signed up anonymously ${this.auth.currentUser.uid}`);
         return cred;
 
+    }
+
+    async resetPassword(email) {
+        await sendPasswordResetEmail(this.auth, email).then(() => {
+            console.log("pw reset mail sent")
+        })
     }
 
     createNewCollection(path) {

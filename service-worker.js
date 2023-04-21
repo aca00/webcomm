@@ -17,6 +17,10 @@ const worker = new Worker.Worker();
 
 authenticate();
 
+
+
+
+
 async function authenticate() {
     console.log("SW: Authenticating")
     await chrome.storage.local.get(["userDetails"]).then(async (result) => {
@@ -54,16 +58,16 @@ async function authenticate() {
             isAuthenticated = true;
             console.log("SW: Auth: ");
             console.log(worker.auth);
-            if (!worker.auth.currentUser.emailVerified) {
-                await worker.verifyEmail();
-            }
+            await worker.resetPassword("akhilca2000@gmail.com");
+            // if (!worker.auth.currentUser.emailVerified) {
+            //     await worker.verifyEmail();
+            // }
         }
     });
-
 }
 
 // email = "akhilca@gmail.com", password = "123abcdre"
-signUp(email = "akhilca2000@gmail.com", password = "123abcdre")
+// signUp(email = "akhilca2000@gmail.com", password = "123abcdre")
 
 async function signIn(email = null, password = null) {
     let temp_cred = await worker.signInWithEmail(email, password);
