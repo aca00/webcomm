@@ -8,10 +8,18 @@ import {
     push,
     onChildAdded,
     query,
-    orderByChild, limitToLast, onValue
+    orderByChild, limitToLast, onValue, update
 } from "firebase/database";
 
-import { getAuth, signInWithRedirect, GoogleAuthProvider, signInAnonymously } from "firebase/auth";
+import {
+    getAuth,
+    signOut,
+    signInWithEmailAndPassword,
+    signInAnonymously,
+    signInWithCredential,
+    createUserWithEmailAndPassword,
+    updateProfile
+} from "firebase/auth";
 
 
 const firebaseConfig = {
@@ -28,6 +36,26 @@ export class Worker {
     constructor() {
         this.app = initializeApp(firebaseConfig);
         this.db = getDatabase(this.app);
+        this.auth = getAuth();
+    }
+
+    async authChangeListener() {
+        this.auth.onAuthStateChanged((user) => {
+            if (user) {
+                console.log(`INDEX: user logged in ${user}`);
+            } else {
+                console.log(`INDEX: user not logged in `);
+            }
+            return user;
+        });
+    }
+
+    async signInWithCred(cred) {
+        console.log("INDEX: Signing in with cred")
+        var ucred = await signInWithCredential(this.auth, cred).catch((err) => {
+            console.log(`INDEX: signinwithcred: ${err.message}`)
+        })
+        return ucred;
     }
 
     async collectionExists(path) {
@@ -139,6 +167,23 @@ export class Worker {
         });
     }
 
+    async signOff() {
+        console.log("INDEX: singnoff called");
+        console.log(this.auth);
+        console.log(this.auth.currentUser)
+        await this.auth.signOut().catch((err) => {
+            console.log(`INDEX: signOut: ${err}`)
+        });
+    }
+
+    async updateUserProfile(user = null, object = null) {
+        await updateProfile(user, object).catch((err) => {
+            console.error("INDEX: Error updating display name:", err);
+            return null;
+        });
+        console.log(`INDEX: User profile updated ${object}`);
+    }
+
 
     async getMessages(path = null) {
         var messages = ["START"];
@@ -152,16 +197,54 @@ export class Worker {
         return messages;
     }
 
-    async signIn() {
-        const auth = getAuth();
-        await signInAnonymously(auth)
+    async signInWithEmail(email = null, password = null) {
+        let cred = await signInWithEmailAndPassword(this.auth, email, password)
+            .catch((error) => {
+                console.log(`INDEX: signInWithEmail ${error.message}`);
+
+                if (error.code == "auth/user-not-found") {
+                    return 0;
+                }
+
+                console.log(`INDEX: signInWithEmail: Error: ${error.message}`);
+                return -1;
+
+            });
+
+        return cred;
+    }
+
+    async signUpWithEmail(email = null, password = null) {
+        var userCredential = await createUserWithEmailAndPassword(this.auth, email, password)
+            .catch((error) => {
+                console.log(error);
+
+                if (error.code == "auth/email-already-in-use") {
+                    console.log("INDEX: auth/email-already-in-use");
+                    return 0;
+                }
+
+                console.log(`INDEX: signUpWithEmail: Error: ${error.message}`);
+                return -1;
+            });
+
+        // if (userCredential != 0 || userCredential != -1) {
+        //     return getAuth();
+        // }
+
+        return userCredential;
+
+    }
+
+    async anonymousSignIn() {
+        var cred = await signInAnonymously(this.auth)
             .catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
                 return -1;
             });
-        console.log(`INDEX: Signed up anonymously ${auth.currentUser.uid}`);
-        return auth.currentUser.uid;
+        console.log(`INDEX: Signed up anonymously ${this.auth.currentUser.uid}`);
+        return cred;
 
     }
 

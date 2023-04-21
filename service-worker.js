@@ -1,7 +1,10 @@
 var userName = null;
 var uid = null;
+var utype = null;
 var currURL = null;
 var rateVal = null;
+var cred = null;
+var isAuthenticated = false;
 
 try {
     importScripts('./dist/bundle.js');
@@ -11,6 +14,96 @@ try {
 }
 
 const worker = new Worker.Worker();
+
+authenticate();
+
+async function authenticate() {
+    console.log("SW: Authenticating")
+    await chrome.storage.local.get(["userDetails"]).then(async (result) => {
+        if (result.userDetails == undefined) {
+            cred = await worker.anonymousSignIn();
+            if (cred == -1) {
+                console.log("SW: Anonymous sign in error");
+            } else {
+                await worker.updateUserProfile(cred.user, { displayName: createRandomUserName() })
+                await writeToChromeStorage({
+                    userDetails: {
+                        type: 'Anon',
+                        uid: cred.user.uid,
+                        name: cred.user.displayName,
+                        email: null,
+                        password: null
+                    }
+                })
+            }
+        } else {
+            console.log(result);
+            uid = result.userDetails.uid;
+            userName = result.userDetails.name;
+            utype = result.userDetails.type;
+            console.log(`utype: ${utype}`)
+
+            if (utype == "Anon") {
+                cred = await worker.anonymousSignIn();
+            } else {
+                console.log("UTYPE is not anon");
+                console.log(utype)
+                cred = await signIn(result.userDetails.email, result.userDetails.password);
+            }
+
+            isAuthenticated = true;
+        }
+    });
+
+}
+
+// email = "akhilca@gmail.com", password = "123abcdre"
+
+// signUp(email = "akhilca@gmail.com", password = "123abcdre")
+
+async function signIn(email = null, password = null) {
+    let temp_cred = await worker.signInWithEmail(email, password);
+    if (temp_cred != 0 || temp_cred != -1 || temp_cred != undefined) {
+        utype = "Signed";
+        cred = temp_cred;
+        await writeToChromeStorage({
+            userDetails: {
+                email: email, password: password, type: 'Signed',
+                name: cred.user.displayName,
+                uid: cred.user.uid
+            }
+        });
+    } else {
+        console.log(`SW: sign in error ${temp_cred}`)
+    }
+    return cred;
+}
+
+async function removeAnon() {
+
+}
+
+async function signUp(email = null, password = null, name = null) {
+
+    let temp_cred = await worker.signUpWithEmail(email = email, password = password);
+    if (temp_cred != 0 || temp_cred != -1 || temp_cred != undefined) {
+        utype = "Signed";
+        cred = temp_cred;
+        await worker.updateUserProfile(cred.user, { displayName: createRandomUserName() })
+        await writeToChromeStorage({
+            userDetails: {
+                email: email,
+                password: password,
+                type: 'Signed',
+                name: cred.user.displayName,
+                uid: cred.user.uid
+            }
+        });
+    } else {
+        console.log(`SW: sign in error ${temp_cred}`)
+    }
+
+}
 
 async function checkURL() {
     console.log("SW: Checking url");
@@ -90,7 +183,7 @@ async function sendNewMessage(data) {
     worker.sendMessage(
         uid = uid,
         uname = userName,
-        utype = 'Anon',
+        utype = utype,
         message = data.message,
         path = `chats/${currURL}`,
         msgCount = data.msgCount,
@@ -110,7 +203,7 @@ function createRandomUserName() {
 
 async function writeToChromeStorage(object) {
     await chrome.storage.local.set(object).then(() => {
-        console.log("SW: wrote to storage " + object)
+        console.log(`SW: wrote to storage ${object}`);
     })
 }
 
@@ -118,7 +211,8 @@ async function createUser() {
     await chrome.storage.local.get(["userDetails"]).then(async (result) => {
         if (result.userDetails == undefined) { // create new user profile
             userName = createRandomUserName();
-            uid = await worker.signIn()
+            let userAuth = await worker.anonymousSignIn();
+            uid = userAuth.currentUser.uid;
             console.log(`SW: Writing to chome storgae ${userName} and ${uid}`)
             if (userName && uid) {
                 await writeToChromeStorage({ userDetails: { uname: userName, uid: uid } })
@@ -135,7 +229,7 @@ async function createUser() {
 
 chrome.runtime.onInstalled.addListener(() => {
     console.log("SW: Oninstall called");
-    createUser();
+    // authenticate();
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {

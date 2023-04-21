@@ -122,13 +122,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 sendButton.addEventListener('click', () => {
-    console.log("POPUP: Button clicked")
-    let text = txtbox.value;
-    if (text == '') {
-        console.log("POPUP: Type something")
-    } else {
-        console.log(`POPUP: Message to send: ${text}`);
-        send(text);
-        // rate(text);
-    }
+
+    
+
+
+
+
+
+    // console.log("POPUP: Button clicked")
+    // let text = txtbox.value;
+    // if (text == '') {
+    //     console.log("POPUP: Type something")
+    // } else {
+    //     console.log(`POPUP: Message to send: ${text}`);
+    //     send(text);
+    //     // rate(text);
+    // }
 });
