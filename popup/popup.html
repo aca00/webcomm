@@ -1,4 +1,78 @@
+
+
+<!doctype html>
 <html>
+
+<head>
+    <title>URL Chat</title>
+    <meta charset="UTF-8">
+  <link rel='stylesheet' href='https://pro.fontawesome.com/releases/v5.10.2/css/all.css'>
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css'><link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" type="text/css" href="css/popup.css">
+    <link rel="stylesheet" type="text/css" href="css/scrollbar.css">
+    <link rel="stylesheet" type="text/css" href="css/loading.css">
+</head>
+
+<body>
+    <img src="img/logoweb.png" width="100%" height="100%">
+    
+    <nav class="tab" data-selected="2">
+        <div class="icons">
+            <div data-index="1" class="icon fa fa-star"></div>
+            <div data-index="2" class="icon fas fa-envelope"></div>
+            <div data-index="3" class="icon fad fa-user fa-swap-opacity"></div>
+        </div>
+        <div class="bar">
+            <div class="cap"></div>
+            <div class="middle">
+                <div class="side"></div>
+                <div class="circle"></div>
+                <div class="side"></div>
+            </div>
+            <div class="cap"></div>
+        </div>
+    </nav>
+    <div id="room-stats" class="no-wrap">
+        <div id="welcome-message">
+            <div id="user"></div>
+        </div>
+        <div id="room-users-counter"></div>
+    </div>
+
+    <ul id="messages">
+        <div id="loading-older-messages-wrapper" class="invisible">
+            <div id="loading-older-messages"></div>
+        </div>
+    </ul>
+
+    <div id="users-typing-wrapper">
+        <ul id="users-typing"></ul>
+        <div id="is-are-typing"></div>
+    </div>
+
+    <div id="message-input-wrapper">
+        <input id="message-input" type="text" placeholder="Write a message" autocomplete="off" />
+        <button id="send"></button>
+    </div>
+
+    <div id="name-input-wrapper" class="invisible">
+        <div id="name-input-close">x</div>
+        <input id="name-input" type="text" placeholder="Your name" autocomplete="off" required="required" />
+        <button id="name-input-ok">OK</button>
+        <div id="name-input-messge"></div>
+    </div>
+
+    <script src="backend.js"></script>
+    <script src='jquery.js'></script>
+    <script src='floating_icon.js'></script>
+    <script src="navbar.js"></script>
+</body>
+
+</html>
+
+
+
+<!-- <html>
 
 <body style="height: 500px; width: 500px">
 
@@ -19,4 +93,4 @@
 
 </html>
 
-</body>
+</body> -->
