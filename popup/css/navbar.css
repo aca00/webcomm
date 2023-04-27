@@ -11,7 +11,7 @@ body nav.tab {
   margin-bottom: 10px;
   display: flex;
   align-items: stretch;
-  width: 20rem;
+  width: 60%;
   height: 4rem;
 }
 body nav.tab.moving .icon {

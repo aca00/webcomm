@@ -8,7 +8,7 @@
 
 body {
     min-width: 500px;
-    min-height: 500px;
+    min-height: 350px;
     width: 75%;
     height: 75%;
     /* background-image: url('../img/logoweb.png'); */
@@ -160,7 +160,7 @@ button {
 #message-input-wrapper {
     position: fixed;
     border-radius: 20px;
-    bottom: 155px;
+    bottom: 130px;
     width: 50%;
     height: 40px;
     background-color: #84eed7;
@@ -186,7 +186,7 @@ button {
 
 #send {
     position: fixed;
-    bottom: 125px;
+    bottom: 100px;
     right: 130px;
     width: 40px;
     height: 100px;
