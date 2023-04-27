@@ -155,13 +155,6 @@ function sendMessage() {
 
   addMessage(message, user.id, Date.now());
 
-  socketIO.emit('chatMessage', {
-    room: tabUrl,
-    senderId: user.id,
-    senderName: user.name,
-    message: message
-  });
-
   document.getElementById('message-input').value = '';
 }
 
