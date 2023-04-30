@@ -176,7 +176,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 
 
-
+signInWithEmailButton.addEventListener('click', () => {
+  console.log("POPUP: clicked signInWithEmailButton");
+  chrome.tabs.create({ url: chrome.runtime.getURL("popup/login/index.html") })
+})
 
 
 
