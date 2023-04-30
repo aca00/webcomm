@@ -5,6 +5,7 @@ var currURL = null;
 var rateVal = null;
 var cred = null;
 var isAuthenticated = false;
+var emailVerified = null;
 
 try {
     importScripts('./dist/bundle.js');
@@ -56,14 +57,27 @@ async function authenticate() {
             }
 
             isAuthenticated = true;
+            emailVerified = worker.auth.currentUser.emailVerified;
+
             console.log("SW: Auth: ");
             console.log(worker.auth);
-            await worker.resetPassword("akhilca2000@gmail.com");
+            // await worker.resetPassword("akhilca2000@gmail.com");
             // if (!worker.auth.currentUser.emailVerified) {
             //     await worker.verifyEmail();
             // }
         }
     });
+
+    // sendToPopUp({
+    //     type: "user-details",
+    //     data: {
+    //         "userName": userName,
+    //         "userId": uid,
+    //         "userType": utype,
+    //         "isAuthenticated": isAuthenticated,
+    //         "emailVerified": emailVerified
+    //     }
+    // })
 }
 
 // email = "akhilca@gmail.com", password = "123abcdre"
@@ -196,7 +210,10 @@ async function sendNewMessage(data) {
 }
 
 function sendToPopUp(message) {
-    console.log(`sending to popup ${message}`)
+    console.log(`sending to popup 
+    type: ${message.type}
+    data: ${message.data}`
+    )
     chrome.runtime.sendMessage(message);
 }
 
@@ -261,8 +278,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     } else if (message.type == "rate-website") {
         console.log(`SW: rate request received ${message.data.rateVal}`);
         getRating(message.data.rateVal);
+    } else if (message.type == "get-auth-status") {
+        console.log(`SW: auth status request received.`);
+        response = {
+            type: "auth-status",
+            data: {
+                isAuthenticated: isAuthenticated
+            }
+        }
     }
-    sendResponse(response);
+
+
+    sendToPopUp(response);
     return true;
 
 });

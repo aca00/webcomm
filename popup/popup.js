@@ -3,6 +3,12 @@ var msgCount = 0;
 var txtbox = document.getElementById('tbox');
 var sendButton = document.getElementById('myButton');
 
+var uname = null;
+var uid = null;
+var utype = null;
+var emailVerified = null;
+var isAuthenticated = null;
+
 function createChatBubble(chat, counter) {
   console.log(`POPUP: New message count: ${counter}`)
   let chatBub = document.createElement('pre');
@@ -73,24 +79,31 @@ function rate(text) {
   }
 }
 
-chrome.runtime.sendMessage({ type: "refresh" }, (response) => {
-  console.log("response")
+function getAuthStatus() {
+  console.log("POPUP: getting-auth-status")
+  chrome.runtime.sendMessage({ type: "get-auth-status" });
+}
 
-  // const urlText = document.getElementById('para');
+getAuthStatus();
 
-  // urlText.textContent = response.data.msg;
+// chrome.runtime.sendMessage({ type: "refresh" }, (response) => {
+//   console.log("response")
 
-  console.log(`
-        response to popup.js
-        ${typeof response}
-        ${response}
-    `)
+//   // const urlText = document.getElementById('para');
 
-  console.log(response);
-});
+//   // urlText.textContent = response.data.msg;
+
+//   console.log(`
+//         response to popup.js
+//         ${typeof response}
+//         ${response}
+//     `)
+
+//   console.log(response);
+// });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-
+  console.log(`POPUP: form SW: type: ${message.type}`);
   if (message.type == "ack") {
     if (message.data.type == "progress") {
       console.log(`POPUP: ${message.data.message}`)
@@ -117,12 +130,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     updateUI("rating", {
       id: "rate_res",
       rateVal: message.data.rateVal
-    })
+    });
+  } else if (message.type == "auth-status") {
+    isAuthenticated = message.data.isAuthenticated;
+    if (!isAuthenticated) {
+      getAuthStatus()
+    } else {
+      console.log(`POPUP: auth status: ${isAuthenticated}`);
+    }
+
   }
 
 });
 
-sendButton.addEventListener('click', () => {
 
 
 
@@ -130,16 +150,19 @@ sendButton.addEventListener('click', () => {
 
 
 
-  // console.log("POPUP: Button clicked")
-  // let text = txtbox.value;
-  // if (text == '') {
-  //     console.log("POPUP: Type something")
-  // } else {
-  //     console.log(`POPUP: Message to send: ${text}`);
-  //     send(text);
-  //     // rate(text);
-  // }
-});
+
+// sendButton.addEventListener('click', () => {
+
+//   console.log("POPUP: Button clicked")
+//   let text = txtbox.value;
+//   if (text == '') {
+//       console.log("POPUP: Type something")
+//   } else {
+//       console.log(`POPUP: Message to send: ${text}`);
+//       send(text);
+//       // rate(text);
+//   }
+// });
 
 
 
