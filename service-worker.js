@@ -68,15 +68,7 @@ async function authenticate() {
         }
     });
 
-    // sendToPopUp({
-    //     type: "user-details",
-    //     data: {
-    //         "userName": userName,
-    //         "userId": uid,
-    //         "userType": utype,
-    //         "isAuthenticated": isAuthenticated,
-    //         "emailVerified": emailVerified
-    //     }
+    // sendToPopUp(
     // })
 }
 
@@ -254,6 +246,7 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    console.log(`SW: onMessageListener: type: ${message.type}`)
     if (message.type == 'refresh') {
         response = {
             type: "ack",
@@ -284,6 +277,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             type: "auth-status",
             data: {
                 isAuthenticated: isAuthenticated
+            }
+        }
+    } else if (message.type == "get-user-details") {
+
+        response = {
+            type: "user-details",
+            data: {
+                "userName": userName,
+                "userId": uid,
+                "userType": utype,
+                "isAuthenticated": isAuthenticated,
+                "emailVerified": emailVerified
             }
         }
     }

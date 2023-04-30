@@ -9,6 +9,13 @@ var utype = null;
 var emailVerified = null;
 var isAuthenticated = null;
 
+
+var emailVerficationButton = document.getElementById("email-verification-button");
+var signOutButton = document.getElementById("sign-out-button");
+var signInWithEmailButton = document.getElementById("sign-in-with-email-button");
+var signInStatusDescription = document.getElementById("sign-in-status-description");
+var userNameField = document.getElementById("user-name-field");
+
 function createChatBubble(chat, counter) {
   console.log(`POPUP: New message count: ${counter}`)
   let chatBub = document.createElement('pre');
@@ -84,23 +91,42 @@ function getAuthStatus() {
   chrome.runtime.sendMessage({ type: "get-auth-status" });
 }
 
+function getUserDetails() {
+  chrome.runtime.sendMessage({ type: "get-user-details" });
+}
+
+function setUserDetails(userDetails) {
+  console.log(userDetails);
+  uname = userDetails.userName;
+  uid = userDetails.userId;
+  utype = userDetails.userType;
+  emailVerified = userDetails.emailVerified;
+
+  userNameField.innerText = uname;
+  signInStatusDescription.innerText = utype;
+}
+
+function refresh() {
+  // chrome.runtime.sendMessage({ type: "refresh" }, (response) => {
+  //   console.log("response")
+
+  //   // const urlText = document.getElementById('para');
+
+  //   // urlText.textContent = response.data.msg;
+
+  //   console.log(`
+  //         response to popup.js
+  //         ${typeof response}
+  //         ${response}
+  //     `)
+
+  //   console.log(response);
+  // });
+
+}
+
 getAuthStatus();
 
-// chrome.runtime.sendMessage({ type: "refresh" }, (response) => {
-//   console.log("response")
-
-//   // const urlText = document.getElementById('para');
-
-//   // urlText.textContent = response.data.msg;
-
-//   console.log(`
-//         response to popup.js
-//         ${typeof response}
-//         ${response}
-//     `)
-
-//   console.log(response);
-// });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log(`POPUP: form SW: type: ${message.type}`);
@@ -137,8 +163,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       getAuthStatus()
     } else {
       console.log(`POPUP: auth status: ${isAuthenticated}`);
+      getUserDetails();
+      refresh();
     }
 
+  } else if (message.type == "user-details") {
+    setUserDetails(message.data)
   }
 
 });
