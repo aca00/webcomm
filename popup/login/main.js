@@ -1,5 +1,7 @@
 var ShowLoginBtn = document.getElementById("ShowLoginBtn");
 var ShowRegistrationBtn = document.getElementById("ShowRegistrationBtn");
+var ForgotPasswordLink = document.getElementById("ForgotPassword");
+var RegistrationitBtn = document.getElementById("RegistrationitBtn");
 
 function ShowLoginForm() {
 
@@ -8,6 +10,7 @@ function ShowLoginForm() {
 	ShowHideForm("LoginFrom", "Show");
 	ShowHideForm("RegistrationFrom", "Hide");
 	ShowHideForm("ForgotPasswordForm", "Hide");
+	ShowHideForm("VerifyEmailAddress", "Hide")
 
 	ActiveInactiveBtn("ShowLoginBtn", "Active");
 	ActiveInactiveBtn("ShowRegistrationBtn", "Inactive");
@@ -16,11 +19,11 @@ function ShowLoginForm() {
 };
 
 function ShowRegistrationForm() {
-	debugger;
 	SetTitle("Registration");
 
 	ShowHideForm("RegistrationFrom", "Show");
 	ShowHideForm("LoginFrom", "Hide");
+	ShowHideForm("VerifyEmailAddress", "Hide")
 	ShowHideForm("ForgotPasswordForm", "Hide");
 
 	ActiveInactiveBtn("ShowLoginBtn", "Inactive");
@@ -35,7 +38,21 @@ function ShowForgotPasswordForm() {
 
 	ShowHideForm("RegistrationFrom", "Hide");
 	ShowHideForm("LoginFrom", "Hide");
+	ShowHideForm("VerifyEmailAddress", "Hide")
 	ShowHideForm("ForgotPasswordForm", "Show");
+
+	ActiveInactiveBtn("ShowLoginBtn", "Inactive");
+	ActiveInactiveBtn("ShowRegistrationBtn", "Inactive");
+	ShowHideFromSwitchBtn("Hide");
+}
+
+function showEmailVerification() {
+	SetTitle("Verify email address");
+
+	ShowHideForm("RegistrationFrom", "Hide");
+	ShowHideForm("LoginFrom", "Hide");
+	ShowHideForm("ForgotPasswordForm", "Hide");
+	ShowHideForm("VerifyEmailAddress", "Show")
 
 	ActiveInactiveBtn("ShowLoginBtn", "Inactive");
 	ActiveInactiveBtn("ShowRegistrationBtn", "Inactive");
@@ -58,7 +75,6 @@ function ShowHideForm(FormID, ShowOrHide) {
 }
 
 function ActiveInactiveBtn(ButtonID, ActiveORInactive) {
-	debugger;
 	var Button = document.getElementById(ButtonID);
 
 	if (ActiveORInactive == "Active") {
@@ -77,6 +93,7 @@ function ShowHideFromSwitchBtn(ShowOrHide) {
 	}
 }
 
+
 ShowLoginBtn.addEventListener('click', () => {
 	console.log("LOGIN: clicked ShowLoginBtn");
 	ShowLoginForm();
@@ -85,6 +102,20 @@ ShowLoginBtn.addEventListener('click', () => {
 ShowRegistrationBtn.addEventListener('click', () => {
 	console.log("LOGIN: clicked ShowRegistrationBtn");
 	ShowRegistrationForm();
+})
+
+ForgotPasswordLink.addEventListener('click', () => {
+	console.log("LOGIN: clicked ForgotPasswordLink");
+	ShowForgotPasswordForm();
+});
+
+RegistrationitBtn.addEventListener('click', () => {
+	console.log("LOGIN: clicked JoinButton");
+	if (ValidateRegistrationForm()) {
+		showEmailVerification();
+	} else {
+		console.log("LOGIN: form validation failed");
+	}
 })
 
 // end

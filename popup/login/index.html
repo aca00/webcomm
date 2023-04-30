@@ -16,6 +16,7 @@
 				<button id="ShowLoginBtn" class="active">Sign in</button>
 				<button id="ShowRegistrationBtn">Sign up</button>
 			</div>
+
 			<div id="LoginFrom">
 				<form action="#">
 					<div class="center">
@@ -28,10 +29,6 @@
 							<a id="ForgotPassword" href="JavaScript:void(0);" onclick="ShowForgotPasswordForm()">Forgot
 								Password?</a>
 						</div>
-						<div class="remember-me">
-							<input id="rememberMe" type="checkbox">
-							<label for="rememberMe">Remember Me</label>
-						</div>
 					</div>
 
 					<div class="center mt-20">
@@ -40,29 +37,35 @@
 					</div>
 				</form>
 				<p class="center mt-20 dont-have-account">
-					Don't have an account?
-					<a href="JavaScript:void(0);" onclick="ShowRegistrationForm()">Sign-up now</a>
+					Remember: Signing into new account will sign out current account
 				</p>
 			</div>
+
 			<div id="RegistrationFrom">
 				<form action="#">
 					<div class="center">
-						<input id="RegiName" class="input-text" type="text" placeholder="Full Name">
+						<!-- <input id="RegiName" class="input-text" type="text" placeholder="Full Name" > -->
 						<input id="RegiEmailAddres" class="input-text mt-10" type="email" placeholder="Email Address">
 						<input id="RegiPassword" class="mt-10 input-text" type="password" placeholder="Password">
 						<input id="RegiConfirmPassword" class="mt-10 input-text" type="password"
 							placeholder="Confirm Password">
 					</div>
 					<div class="center mt-20">
-						<input onclick="return ValidateRegistrationForm();" class="Submit-Btn" type="submit"
-							value="Registration" id="RegistrationitBtn">
+						<input class="Submit-Btn" type="submit" value="Join" id="RegistrationitBtn">
 					</div>
 				</form>
 				<p class="center mt-20 already-have-account">
-					Already have an account?
-					<a href="#" onclick="ShowLoginForm()">Sign-in now</a>
+					Already have an account. Try signing in
 				</p>
 			</div>
+
+			<div id="VerifyEmailAddress" style="display:none;">
+				<!-- <h1 id="formTitle">Verify your email address</h1> -->
+				<p class="center mt-20">We have sent a link to your email address. Please click the link to complete
+					registration. If you are already verified, click <a id="EmailVerifyCheck" href="">here</a></p>
+			</div>
+
+
 			<div id="ForgotPasswordForm">
 				<form action="">
 					<div class="center mt-20">
