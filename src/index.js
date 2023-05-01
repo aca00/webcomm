@@ -20,6 +20,7 @@ import {
     sendEmailVerification,
     createUserWithEmailAndPassword,
     updateProfile,
+    onAuthStateChanged,
     sendPasswordResetEmail
 } from "firebase/auth";
 
@@ -41,15 +42,23 @@ export class Worker {
         this.auth = getAuth();
     }
 
-    async authChangeListener() {
-        this.auth.onAuthStateChanged((user) => {
+    async listenToAuthChange() {
+        onAuthStateChanged(this.auth, (user) => {
+            console.log("INDEX: listenToAuthChange: Auth state changed")
             if (user) {
-                console.log(`INDEX: user logged in ${user}`);
+                console.log(user);
+                // User is signed in, see docs for a list of available properties
+                // https://firebase.google.com/docs/reference/js/firebase.User
+                // ...
             } else {
-                console.log(`INDEX: user not logged in `);
+                // User is signed out
+                // ...
             }
-            return user;
         });
+    }
+
+    async reload() {
+        await this.auth.currentUser.reload();
     }
 
     async signInWithCred(cred) {
@@ -172,7 +181,7 @@ export class Worker {
     async verifyEmail() {
         console.log("INDEX: Sending email verification")
         await sendEmailVerification(this.auth.currentUser).then(() => {
-            console.log("EMAil verificagtion sent")
+            console.log("INDEX: Email verificagtion sent")
         }).catch((err) => {
             console.log(`INDEX: verifyEmail: ${err.message}`);
         });
@@ -237,10 +246,6 @@ export class Worker {
                 console.log(`INDEX: signUpWithEmail: Error: ${error.message}`);
                 return -1;
             });
-
-        // if (userCredential != 0 || userCredential != -1) {
-        //     return getAuth();
-        // }
 
         return userCredential;
 

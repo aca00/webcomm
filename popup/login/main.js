@@ -2,6 +2,8 @@ var ShowLoginBtn = document.getElementById("ShowLoginBtn");
 var ShowRegistrationBtn = document.getElementById("ShowRegistrationBtn");
 var ForgotPasswordLink = document.getElementById("ForgotPassword");
 var RegistrationitBtn = document.getElementById("RegistrationitBtn");
+var EmailVerifyCheck = document.getElementById("EmailVerifyCheck");
+
 
 function ShowLoginForm() {
 
@@ -93,6 +95,9 @@ function ShowHideFromSwitchBtn(ShowOrHide) {
 	}
 }
 
+function signUp(email, password) {
+	chrome.runtime.sendMessage({ type: "signup", data: { email: email, password: password } });
+}
 
 ShowLoginBtn.addEventListener('click', () => {
 	console.log("LOGIN: clicked ShowLoginBtn");
@@ -109,13 +114,31 @@ ForgotPasswordLink.addEventListener('click', () => {
 	ShowForgotPasswordForm();
 });
 
-RegistrationitBtn.addEventListener('click', () => {
+EmailVerifyCheck.addEventListener('click', () => {
+	console.log(`LOGIN: clicked EmailVerifyCheck`)
+	chrome.runtime.sendMessage({ type: 'check-email-verified' });
+})
+
+RegistrationitBtn.addEventListener('click', async () => {
 	console.log("LOGIN: clicked JoinButton");
 	if (ValidateRegistrationForm()) {
-		showEmailVerification();
+		signUp(document.getElementById('RegiEmailAddres').value, document.getElementById('RegiPassword').value)
 	} else {
 		console.log("LOGIN: form validation failed");
 	}
 })
+
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+	console.log(`LOGIN: form SW: type: ${message.type}`);
+	if (message.type == "signup-success") {
+		showEmailVerification();
+	} else if (message.type == "signup-error") {
+		// update <P>
+	} else if (message.type == "email-verified-status") {
+		console.log(message.data);
+	}
+});
+
 
 // end

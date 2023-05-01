@@ -18,10 +18,6 @@ const worker = new Worker.Worker();
 
 authenticate();
 
-
-
-
-
 async function authenticate() {
     console.log("SW: Authenticating")
     await chrome.storage.local.get(["userDetails"]).then(async (result) => {
@@ -57,6 +53,7 @@ async function authenticate() {
             }
 
             isAuthenticated = true;
+            worker.listenToAuthChange();
             emailVerified = worker.auth.currentUser.emailVerified;
 
             console.log("SW: Auth: ");
@@ -94,12 +91,12 @@ async function signIn(email = null, password = null) {
 }
 
 async function signUp(email = null, password = null, name = null) {
-    // await worker.signOff();
+    console.log(`SW: Signing up ${email}`);
     let temp_cred = await worker.signUpWithEmail(email = email, password = password);
     if (temp_cred != 0 && temp_cred != -1 && temp_cred != undefined) {
         utype = "Signed";
         cred = temp_cred;
-        await worker.updateUserProfile(cred.user, { displayName: createRandomUserName() })
+        await worker.updateUserProfile(cred.user, { displayName: createRandomUserName() });
         await writeToChromeStorage({
             userDetails: {
                 email: email,
@@ -109,8 +106,12 @@ async function signUp(email = null, password = null, name = null) {
                 uid: cred.user.uid
             }
         });
+        authenticate();
+        await worker.verifyEmail();
+        sendToPopUp({ type: 'signup-success' })
     } else {
-        console.log(`SW: sign in error ${temp_cred}`)
+        console.log(`SW: sign up error ${temp_cred}`)
+        sendToPopUp({ type: 'signup-error' });
     }
 
 }
@@ -240,6 +241,16 @@ async function createUser() {
     });
 }
 
+async function checkIfEmailVerified() {
+    await worker.reload();
+    sendToPopUp({
+        type: "email-verified-status", data: {
+            emailVerified: worker.auth.currentUser.emailVerified,
+            emailAddress: worker.auth.currentUser.email
+        }
+    });
+}
+
 chrome.runtime.onInstalled.addListener(() => {
     console.log("SW: Oninstall called");
     // authenticate();
@@ -291,6 +302,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 "emailVerified": emailVerified
             }
         }
+    } else if (message.type == "signup") {
+        signUp(message.data.email, message.data.password, null)
+    } else if (message.type == "check-email-verified") {
+        checkIfEmailVerified();
     }
 
 
