@@ -28,7 +28,7 @@ body {
     opacity: 0.2;
 } */
 
-button {
+#send {
     border: 0;
     background: 0 0;
     outline: none;
@@ -92,6 +92,7 @@ button {
     cursor: pointer;
     color: #d2efee;
 }
+
 
 #room-users-counter {
     width: 50%;
@@ -295,4 +296,23 @@ button {
     padding-top: 10px;
     display: flex;
     justify-content: center;
+}
+
+#user-name-field {
+    font-size: large;
+    font-weight: bolder;
+}
+
+#email-verificaton-success {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+#sign-out-button {
+    display: block;
+    border: 2px solid black;
+    border-radius: 10px;
+    padding: 10px;
+    background-color: #2a4e7c;
 }
