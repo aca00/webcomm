@@ -10,14 +10,37 @@
     <link rel="stylesheet" type="text/css" href="css/popup.css">
     <link rel="stylesheet" type="text/css" href="css/scrollbar.css">
     <link rel="stylesheet" type="text/css" href="css/loading.css">
+    <link rel="stylesheet" type="text/css" href="css/rate.css">
 </head>
 
 <body>
     <!-- <img src="img/logoweb.png" width="100%" height="100%"> -->
 
-    <div id="rate-interface" style="display:none;">Rate Interface</div>
+    <div id="rate-interface" style="display:block;">
 
-    <div id="chat-interface" style="display: block;">
+        <div id="rate-title">Rate</div>
+
+        <div id="rate-results-overview">
+            <div id="rate-result">rate resu</div>
+            <div id="phishing-result">phishing res</div>
+        </div>
+
+        <div id="new-rate-and-review-area">
+            <div id="overall-rating-area">
+                <div class="rating">
+                    <input type="radio" id="star5" name="rating" value="5" /><label for="star5"></label>
+                    <input type="radio" id="star4" name="rating" value="4" /><label for="star4"></label>
+                    <input type="radio" id="star3" name="rating" value="3" /><label for="star3"></label>
+                    <input type="radio" id="star2" name="rating" value="2" /><label for="star2"></label>
+                    <input type="radio" id="star1" name="rating" value="1" /><label for="star1"></label>
+                </div>
+            </div>
+            <div id="review-area"></div>
+        </div>
+
+    </div>
+
+    <div id="chat-interface" style="display: none;">
 
 
 

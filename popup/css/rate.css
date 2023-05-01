@@ -1,0 +1,28 @@
+.rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+}
+
+.rating input {
+    display: none;
+}
+
+.rating label {
+    color: #ddd;
+    font-size: 40px;
+    padding: 0 2px;
+    cursor: pointer;
+}
+
+.rating label:before {
+    content: '\2605';
+}
+
+.rating input:checked~label {
+    color: #ffcc00;
+}
+
+.rating input:checked~label::before {
+    content: '\2605';
+}
