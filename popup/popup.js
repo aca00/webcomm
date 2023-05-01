@@ -19,6 +19,13 @@ var signedWithEmailBlock = document.getElementById("signed-in-with-email");
 var anonSignedInBlock = document.getElementById("anon-signed-in");
 var emailVerficationSuccess = document.getElementById("email-verificaton-success");
 var emailVerificationPending = document.getElementById("email-verification-pending");
+var rateIcon = document.getElementById("rate-icon");
+var chatIcon = document.getElementById("chat-icon");
+var accountIcon = document.getElementById("account-icon");
+
+var rateInterface = document.getElementById("rate-interface");
+var chatInterface = document.getElementById("chat-interface");
+var accountInterface = document.getElementById("account-interface");
 
 function createChatBubble(chat, counter) {
   console.log(`POPUP: New message count: ${counter}`)
@@ -150,6 +157,8 @@ function refresh() {
 getAuthStatus();
 
 
+
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log(`POPUP: form SW: type: ${message.type}`);
   if (message.type == "ack") {
@@ -201,6 +210,27 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 signInWithEmailButton.addEventListener('click', () => {
   console.log("POPUP: clicked signInWithEmailButton");
   chrome.tabs.create({ url: chrome.runtime.getURL("popup/login/index.html") })
+});
+
+
+rateIcon.addEventListener('click', () => {
+  rateInterface.style.display = "block";
+  chatInterface.style.display = "none";
+  accountInterface.style.display = "none";
+});
+
+chatIcon.addEventListener('click', () => {
+  rateInterface.style.display = "none";
+  chatInterface.style.display = "block";
+  accountInterface.style.display = "none";
+
+})
+
+accountIcon.addEventListener('click', () => {
+  rateInterface.style.display = "none";
+  chatInterface.style.display = "none";
+  accountInterface.style.display = "block";
+
 })
 
 
