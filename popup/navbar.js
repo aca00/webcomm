@@ -9,7 +9,7 @@ $(".icon[data-index]").click(function(){
 		setTimeout(function(){ //Because apparently this is the only way it will work
 			navtab.find('.icon[data-index="2"]').addClass("initialised"); //Same animation as the other so they line up
 		});
-	}
+	}  
 	previous = index;
 	setTimeout(function(){
 		navtab.removeClass("moving").removeClass("hidemiddle");
