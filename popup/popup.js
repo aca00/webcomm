@@ -204,6 +204,117 @@ signInWithEmailButton.addEventListener('click', () => {
 })
 
 
+var user = { id: '', name: '' };
+var tabUrl;
+var lastSenderId;
+var oldestMessageTimestamp;
+var isTyping = false;
+
+
+function addMessage(message, sender = "test", timestamp = "timestamp", prepend = false) {
+  if (!oldestMessageTimestamp || timestamp < oldestMessageTimestamp) {
+    oldestMessageTimestamp = timestamp;
+  }
+
+  var li = document.createElement('li');
+
+  if (lastSenderId && lastSenderId === sender) {
+    li.classList.add('continuous-message');
+  }
+
+  lastSenderId = sender.id;
+
+  var messageWrapper = document.createElement('div');
+  messageWrapper.className = 'message-wrapper';
+
+  // Adds the message time
+  var messageTimeWrapper = document.createElement('div');
+  messageTimeWrapper.classList.add('message-time');
+
+  var messageTimestamp = document.createElement('div');
+  messageTimestamp.classList.add('message-timestamp');
+  messageTimestamp.classList.add('invisible');
+  messageTimestamp.innerHTML = timestamp;
+
+  var messageReadableTime = document.createElement('div');
+  messageReadableTime.classList.add('message-readable-time');
+  messageReadableTime.innerHTML = new Date(timestamp).toLocaleString();
+
+  messageTimeWrapper.appendChild(messageTimestamp);
+  messageTimeWrapper.appendChild(messageReadableTime);
+  messageWrapper.appendChild(messageTimeWrapper);
+
+  // Adds the message sender
+  if (sender && sender.id && sender.id !== user.id) {
+    var messageSenderWrapper = document.createElement('div');
+    messageSenderWrapper.classList.add('message-sender');
+
+    var messageSenderId = document.createElement('div');
+    messageSenderId.classList.add('message-sender-id');
+    messageSenderId.innerHTML = sender.id + ':';
+
+    var messageSenderName = document.createElement('div');
+    messageSenderName.classList.add('message-sender-name');
+
+    if (sender.name) {
+      messageSenderId.classList.add('invisible');
+      messageSenderName.innerText = sender.name + ':';
+    }
+
+    messageSenderWrapper.appendChild(messageSenderId);
+    messageSenderWrapper.appendChild(messageSenderName);
+    messageWrapper.appendChild(messageSenderWrapper);
+    messageReadableTime.innerHTML = messageReadableTime.innerHTML + ' -';
+  } else {
+    messageWrapper.classList.add('my-message');
+    messageReadableTime.innerHTML = messageReadableTime.innerHTML + ':';
+  }
+
+  // Adds the message
+  var messageDiv = document.createElement('div');
+  messageDiv.className = 'message';
+  messageDiv.appendChild(document.createTextNode(message));
+  messageWrapper.appendChild(messageDiv);
+
+  li.appendChild(messageWrapper);
+  var messages = document.getElementById('messages');
+
+  if (prepend) {
+    messages.insertBefore(li, messages.getElementsByTagName('li')[0]);
+  } else {
+    messages.appendChild(li);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+}
+
+function sendMessageTest() {
+  console.log("POPUP: sending message")
+  var message = document.getElementById('message-input').value;
+
+  if (message === '') {
+    return;
+  }
+
+  addMessage(message, "hmdlkjfasd", Date.now());
+
+  // socketIO.emit('chatMessage', {
+  //   room: tabUrl,
+  //   senderId: user.id,
+  //   senderName: user.name,
+  //   message: message
+  // });
+
+  document.getElementById('message-input').value = '';
+}
+
+var sendmsgbt = document.getElementById('send')
+
+sendmsgbt.addEventListener('click', () => {
+  console.log("POPUP: clicked sendmsgbt");
+  sendMessageTest();
+
+})
 
 
 // sendButton.addEventListener('click', () => {
