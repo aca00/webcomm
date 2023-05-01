@@ -130,7 +130,13 @@ function setUserDetails(userDetails) {
   }
 
   userNameField.innerText = uname;
-  signInStatusDescription.innerText = utype;
+  if (utype == "Anon") {
+    signInStatusDescription.innerText = "😎 Signed anonymously"
+  } else if (utype == "Signed") {
+    signInStatusDescription.innerText = "😍 Signed using email"
+
+  }
+
 
 
 }

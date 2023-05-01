@@ -24,9 +24,9 @@ body {
     /* background-position: center; */
 }
 
-img {
+/* img {
     opacity: 0.2;
-}
+} */
 
 button {
     border: 0;
@@ -274,4 +274,25 @@ button {
     height: 20px;
     font-weight: bold;
     color: white;
+}
+
+#sign-in-status {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    border-width: 1px;
+    border-color: #dcdcdc;
+    border-style: solid;
+    border-radius: 10px;
+}
+
+#user-details-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+#user-avatar-wrapper {
+    padding-top: 10px;
+    display: flex;
+    justify-content: center;
 }
