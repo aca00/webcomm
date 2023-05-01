@@ -77,13 +77,15 @@
 
         <div id="sign-in-menu">
 
-            <div id="signed-in-with-email" style="padding:10px; border: 1px solid black; display: none;">
+            <div id="signed-in-with-email" style="padding:10px; ">
                 <div id="email-verification">
                     <div id="email-verificaton-success" style="display:none;">
-                        <span>✅ Email verified succesfully.</span>
+                        <p>✅ Email verified succesfully.</p>
                     </div>
-                    <div id="email-verification-pending" style="display:none;">
-                        <button id="email-verification-button">Verfy email button</button>
+                    <div id="email-verification-pending" style="display:flex;">
+                        <p id="verify-email-title">Verfy your email address</p>
+                        <p id="verify-email-content">Please verify email address to complete the registration and enjoy all features</p>
+                        <button id="email-verification-button">Verfy email</button>
                     </div>
                 </div>
                 <div id="sign-out">
@@ -120,7 +122,7 @@
 
 
     <!-- <script src="socket.io-1.4.5.js"></script> -->
-    <script src="popup.js"></script>
+    <!-- <script src="popup.js"></script> -->
     <script src='jquery.js'></script>
     <script src="navbar.js"></script>
 </body>

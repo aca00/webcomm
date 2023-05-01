@@ -15,7 +15,7 @@
 
 body {
     min-width: 400px;
-    min-height: 500px;
+    min-height: 550px;
     width: 75%;
     height: 75%;
     display: block;
@@ -306,13 +306,72 @@ body {
 #email-verificaton-success {
     width: 100%;
     display: flex;
-    justify-content: center;
+    text-align: center;
 }
 
 #sign-out-button {
     display: block;
-    border: 2px solid black;
+    border: 2px solid rgb(160, 30, 30);
     border-radius: 10px;
-    padding: 10px;
-    background-color: #2a4e7c;
+    padding: 5px;
+    background-color: #ffffff;
+
+    color: rgb(160, 30, 30);
+}
+
+#sign-out-button:hover {
+    background-color: rgb(160, 30, 30);
+    color: #ffffff;
+
+}
+
+#email-verification-button {
+    border: 2px solid rgb(7, 76, 129);
+    border-radius: 10px;
+    padding: 5px;
+    color: #ffffff;
+    background-color: rgb(7, 76, 129);
+}
+
+#email-verification-button:hover {
+    border: 2px solid rgb(7, 76, 129);
+    border-radius: 10px;
+    padding: 5px;
+    color: rgb(7, 76, 129);
+    background-color: rgb(255, 255, 255);
+}
+
+#sign-out {
+    display: flex;
+    padding-top: 10px;
+    justify-content: center;
+}
+
+#verify-email-title {
+    text-align: center;
+    padding: 0px, 10px, 5px, 10px;
+    font-size: medium;
+    font-weight: bold;
+}
+
+#verify-email-content {
+    text-align: center;
+    padding-bottom: 10px;
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+#email-verification-pending {
+    display: flex;
+    border-style: solid;
+    border-color: rgb(155, 153, 153);
+    border-width: 0px;
+    padding-top: 10px;
+    border-radius: 10px;
+    justify-content: center;
+    flex-direction: column;
+    padding-left: 20%;
+    padding-right: 20%;
+    padding-bottom: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
