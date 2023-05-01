@@ -1,19 +1,29 @@
 * {
-    font-family: Helvetica; 
+    font-family: Helvetica;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    
+
+
+
+}
+
+#message-input-menu {
+    display: flex;
+    justify-content: center;
 }
 
 body {
-    min-width: 500px;
-    min-height: 350px;
+    min-width: 400px;
+    min-height: 500px;
     width: 75%;
     height: 75%;
+    display: block;
+    /* flex-direction: column; */
     /* background-image: url('../img/logoweb.png'); */
-    background-position: center;
+    /* background-position: center; */
 }
+
 img {
     opacity: 0.2;
 }
@@ -38,21 +48,27 @@ button {
     opacity: 0.5;
 }
 
+#navigation-menu {
+    display: flex;
+    justify-content: center;
+}
+
 @keyframes pulsate {
-    0% { 
+    0% {
         opacity: 0.5;
     }
-    50% { 
+
+    50% {
         opacity: 1.0;
     }
-    100% { 
+
+    100% {
         opacity: 0.5;
     }
 }
 
 #room-stats {
     position: fixed;
-    top: 0;
     width: 100%;
     height: 20px;
     line-height: 20px;
@@ -116,7 +132,10 @@ button {
     margin-right: 3px;
 }
 
-.message-time, .message-sender, .message-sender-id, .message-sender-name {
+.message-time,
+.message-sender,
+.message-sender-id,
+.message-sender-name {
     display: inline-block;
     font-size: x-small;
     font-style: oblique;
@@ -132,7 +151,7 @@ button {
 .message {
     margin-top: 5px;
     font-size: medium;
-    font-family: 'Open Sans',sans-serif;
+    font-family: 'Open Sans', sans-serif;
 }
 
 #users-typing-wrapper {
@@ -145,7 +164,9 @@ button {
     font-weight: bold;
 }
 
-#users-typing, #users-typing li, #is-are-typing {
+#users-typing,
+#users-typing li,
+#is-are-typing {
     display: inline-block;
 }
 
