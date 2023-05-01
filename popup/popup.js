@@ -15,6 +15,10 @@ var signOutButton = document.getElementById("sign-out-button");
 var signInWithEmailButton = document.getElementById("sign-in-with-email-button");
 var signInStatusDescription = document.getElementById("sign-in-status-description");
 var userNameField = document.getElementById("user-name-field");
+var signedWithEmailBlock = document.getElementById("signed-in-with-email");
+var anonSignedInBlock = document.getElementById("anon-signed-in");
+var emailVerficationSuccess = document.getElementById("email-verificaton-success");
+var emailVerificationPending = document.getElementById("email-verification-pending");
 
 function createChatBubble(chat, counter) {
   console.log(`POPUP: New message count: ${counter}`)
@@ -102,8 +106,26 @@ function setUserDetails(userDetails) {
   utype = userDetails.userType;
   emailVerified = userDetails.emailVerified;
 
+  if (utype == 'Anon') {
+    anonSignedInBlock.style.display = 'block';
+    signedWithEmailBlock.style.display = 'none';
+  } else if (utype == "Signed") {
+    anonSignedInBlock.style.display = 'none';
+    signedWithEmailBlock.style.display = 'block';
+
+    if (emailVerified) {
+      emailVerificationPending.style.display = 'none';
+      emailVerficationSuccess.style.display = 'block';
+    } else {
+      emailVerificationPending.style.display = 'block';
+      emailVerficationSuccess.style.display = 'none';
+    }
+  }
+
   userNameField.innerText = uname;
   signInStatusDescription.innerText = utype;
+
+
 }
 
 function refresh() {

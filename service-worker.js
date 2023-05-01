@@ -6,6 +6,7 @@ var rateVal = null;
 var cred = null;
 var isAuthenticated = false;
 var emailVerified = null;
+var authInProgress = false;
 
 try {
     importScripts('./dist/bundle.js');
@@ -19,6 +20,7 @@ const worker = new Worker.Worker();
 authenticate();
 
 async function authenticate() {
+    authInProgress = true;
     console.log("SW: Authenticating")
     await chrome.storage.local.get(["userDetails"]).then(async (result) => {
         if (result.userDetails == undefined) {
@@ -53,6 +55,7 @@ async function authenticate() {
             }
 
             isAuthenticated = true;
+            authInProgress = false;
             worker.listenToAuthChange();
             emailVerified = worker.auth.currentUser.emailVerified;
 
@@ -243,9 +246,10 @@ async function createUser() {
 
 async function checkIfEmailVerified() {
     await worker.reload();
+    emailVerified = worker.auth.currentUser.emailVerified;
     sendToPopUp({
         type: "email-verified-status", data: {
-            emailVerified: worker.auth.currentUser.emailVerified,
+            emailVerified: emailVerified,
             emailAddress: worker.auth.currentUser.email
         }
     });
@@ -255,6 +259,12 @@ chrome.runtime.onInstalled.addListener(() => {
     console.log("SW: Oninstall called");
     // authenticate();
 });
+
+async function singOff() {
+    await worker.signOff();
+    console.log("SW: singOff: signed out and signing in anonymously")
+    await worker.anonymousSignIn();
+}
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     console.log(`SW: onMessageListener: type: ${message.type}`)
@@ -306,6 +316,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         signUp(message.data.email, message.data.password, null)
     } else if (message.type == "check-email-verified") {
         checkIfEmailVerified();
+    } else if (message.type == "sign-off") {
+        signOff();
     }
 
 
@@ -313,3 +325,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
 
 });
+
+
+// TODO: issue fix two times reload for showing u detaisl
