@@ -124,7 +124,7 @@ function setUserDetails(userDetails) {
       emailVerificationPending.style.display = 'none';
       emailVerficationSuccess.style.display = 'block';
     } else {
-      emailVerificationPending.style.display = 'block';
+      emailVerificationPending.style.display = 'flex';
       emailVerficationSuccess.style.display = 'none';
     }
   }
@@ -233,6 +233,7 @@ chatIcon.addEventListener('click', () => {
 })
 
 accountIcon.addEventListener('click', () => {
+  console.log("clicked")
   rateInterface.style.display = "none";
   chatInterface.style.display = "none";
   accountInterface.style.display = "block";

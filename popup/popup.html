@@ -17,7 +17,7 @@
 
     <div id="rate-interface" style="display:none;">Rate Interface</div>
 
-    <div id="chat-interface" style="display:none; border: 1px, solid, black;">
+    <div id="chat-interface" style="display: block;">
 
 
 
@@ -57,7 +57,7 @@
 
     </div>
 
-    <div id="account-interface" style="display: block; padding:10px">
+    <div id="account-interface" style="display: none; padding:10px">
 
         <div id="sign-in-status">
             <p id="sign-in-status-description">Default sign in status</p>
@@ -82,9 +82,10 @@
                     <div id="email-verificaton-success" style="display:none;">
                         <p>✅ Email verified succesfully.</p>
                     </div>
-                    <div id="email-verification-pending" style="display:flex;">
+                    <div id="email-verification-pending" style="display:none;">
                         <p id="verify-email-title">Verfy your email address</p>
-                        <p id="verify-email-content">Please verify email address to complete the registration and enjoy all features</p>
+                        <p id="verify-email-content">Please verify email address to complete the registration and enjoy
+                            all features</p>
                         <button id="email-verification-button">Verfy email</button>
                     </div>
                 </div>
@@ -122,7 +123,7 @@
 
 
     <!-- <script src="socket.io-1.4.5.js"></script> -->
-    <!-- <script src="popup.js"></script> -->
+    <script src="popup.js"></script>
     <script src='jquery.js'></script>
     <script src="navbar.js"></script>
 </body>
