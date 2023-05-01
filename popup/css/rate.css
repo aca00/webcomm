@@ -26,3 +26,75 @@
 .rating input:checked~label::before {
     content: '\2605';
 }
+
+#rate-title {
+    text-align: center;
+    font-weight: bolder;
+    font-size: large;
+    padding: 20px;
+}
+
+#rate-results-overview {
+    display: flex;
+    justify-content: center;
+}
+
+#rate-result {
+    display: flex;
+    justify-self: center;
+    padding: 20px;
+    border: 1px solid black;
+    border-radius: 10px;
+    width: 30%;
+}
+
+#total-rating {
+    color: grey;
+}
+
+#phishing-result {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px;
+    border: 1px solid black;
+    border-radius: 10px;
+    width: 30%;
+    height: 30%;
+
+
+}
+
+#rate-result-bold {
+    font-size: large;
+    font-weight: bold;
+}
+
+#separator {
+    width: 10%;
+}
+
+#icon-for-security {
+    font-size: large;
+    font-weight: bolder;
+    color: green;
+    text-align: center;
+
+}
+
+#security-comment {
+    text-align: center;
+}
+
+#new-rate-and-review-area {
+    padding-top: 20%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+#new-rate-title {
+    font-weight: bold;
+    font-size: large;
+}
