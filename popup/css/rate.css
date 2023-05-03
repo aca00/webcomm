@@ -97,4 +97,16 @@
 #new-rate-title {
     font-weight: bold;
     font-size: large;
+    padding-bottom: 10px;
+}
+
+#rate-submit-button {
+    border: 0px;
+    color: blue;
+    background-color: transparent;
+    font-size: large;
+}
+
+#rate-submit-area {
+    padding: 10px;
 }
