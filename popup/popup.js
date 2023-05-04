@@ -295,7 +295,7 @@ function addMessage(message = "", sender = "defaultSender", timestamp = Date.now
   messageWrapper.appendChild(messageTimeWrapper);
 
   // Adds the message sender
-  if (sender && sender.id && sender.id !== user.id) {
+  if (sender && sender.id && sender.id !== uid) {
     var messageSenderWrapper = document.createElement('div');
     messageSenderWrapper.classList.add('message-sender');
 
@@ -306,9 +306,9 @@ function addMessage(message = "", sender = "defaultSender", timestamp = Date.now
     var messageSenderName = document.createElement('div');
     messageSenderName.classList.add('message-sender-name');
 
-    if (sender.name) {
+    if (sender.senderName) {
       messageSenderId.classList.add('invisible');
-      messageSenderName.innerText = sender.name + ':';
+      messageSenderName.innerText = sender.senderName + ':';
     }
 
     messageSenderWrapper.appendChild(messageSenderId);
