@@ -165,8 +165,6 @@ function refresh() {
 getAuthStatus();
 
 
-
-
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log(`POPUP: form SW: type: ${message.type}`);
   if (message.type == "ack") {
@@ -181,22 +179,23 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       chats: message.data.chats
     });
   } else if (message.type == 'child-added') {
-    console.log(`OPUP: Child added at index time:  ${message.data.time}`);
+
+    console.log(`POPUP: Child added at index uid:  ${message.data.uid}`);
     console.log(message);
 
-    let t;
+    // let t;
 
-    if (message.data.time == "") {
-      t = Date.now();
-    } else {
-      t = new Date(message.data.time)
-    }
+    // if (message.data.time == "") {
+    //   t = Date.now();
+    // } else {
+    //   t = new Date(message.data.time)
+    // }
 
-    addMessage(message = message.data.message, sender = uname, timestamp = t);
-    // updateUI("newMessage", {
-    //   id: "msg_res",
-    //   chat: message.data
-    // })
+    addMessage(message.data.message,
+      { id: message.data.uid, senderName: message.data.name },
+      new Date(message.data.time));
+
+
     console.log(message);
   } else if (message.type == 'message-sent') {
     console.log(`POPUP: Message sent count: ${message.data.msgCount}`);
@@ -261,34 +260,35 @@ var oldestMessageTimestamp;
 var isTyping = false;
 
 
-function addMessage(message, sender = "test", timestamp = "timestamp", prepend = false) {
+function addMessage(message = "", sender = "defaultSender", timestamp = Date.now(), prepend = false) {
+
   if (!oldestMessageTimestamp || timestamp < oldestMessageTimestamp) {
     oldestMessageTimestamp = timestamp;
   }
 
   var li = document.createElement('li');
 
-  if (lastSenderId && lastSenderId === sender) {
-    li.classList.add('continuous-message');
-  }
+  // if (lastSenderId && lastSenderId === sender) {
+  //   li.classList.add('continuous-message');
+  // }
 
-  lastSenderId = sender.id;
+  // lastSenderId = sender.id;
 
   var messageWrapper = document.createElement('div');
   messageWrapper.className = 'message-wrapper';
 
   // Adds the message time
   var messageTimeWrapper = document.createElement('div');
-  messageTimeWrapper.classList.add('message-time');
+  messageTimeWrapper.classList.add('message-time'); // parent div
 
-  var messageTimestamp = document.createElement('div');
+  var messageTimestamp = document.createElement('div'); // invisible div element
   messageTimestamp.classList.add('message-timestamp');
   messageTimestamp.classList.add('invisible');
   messageTimestamp.innerHTML = timestamp;
 
   var messageReadableTime = document.createElement('div');
   messageReadableTime.classList.add('message-readable-time');
-  messageReadableTime.innerHTML = new Date(timestamp).toLocaleString();
+  messageReadableTime.innerHTML = timestamp.toLocaleString();
 
   messageTimeWrapper.appendChild(messageTimestamp);
   messageTimeWrapper.appendChild(messageReadableTime);
