@@ -183,14 +183,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     console.log(`POPUP: Child added at index uid:  ${message.data.uid}`);
     console.log(message);
 
-    // let t;
-
-    // if (message.data.time == "") {
-    //   t = Date.now();
-    // } else {
-    //   t = new Date(message.data.time)
-    // }
-
     addMessage(message.data.message,
       { id: message.data.uid, senderName: message.data.name },
       new Date(message.data.time));
@@ -202,10 +194,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   } else if (message.type == "rating") {
     console.log(`POPUP: rate value: ${message.data.rateVal}`)
-    updateUI("rating", {
-      id: "rate_res",
-      rateVal: message.data.rateVal
-    });
+    // updateUI("rating", {
+    //   id: "rate_res",
+    //   rateVal: message.data.rateVal
+    // });
+
+    document.getElementById("rate-result-bold").innerText = message.data.rateVal;
+
   } else if (message.type == "auth-status") {
     isAuthenticated = message.data.isAuthenticated;
     if (!isAuthenticated) {
