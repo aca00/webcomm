@@ -129,7 +129,7 @@ async function checkURL() {
         }
 
         if (url === undefined) {
-            url = "undefined-url";
+            url = "SW: undefined-url";
             console.log(url)
         }
 
@@ -160,7 +160,7 @@ async function checkURL() {
 async function refreshChats(chatPath) {
 
     if (await worker.collectionExists(chatPath)) {
-        console.log("collection exists");
+        console.log("SW: collection exists");
     } else {
         await worker.createNewCollection(chatPath);
     }
