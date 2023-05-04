@@ -252,8 +252,6 @@ accountIcon.addEventListener('click', () => {
 
 })
 
-
-var user = { id: '', name: '' };
 var tabUrl;
 var lastSenderId;
 var oldestMessageTimestamp;
@@ -347,13 +345,6 @@ function sendMessageTest() {
   }
 
   addMessage(message, "hmdlkjfasd", Date.now());
-
-  // socketIO.emit('chatMessage', {
-  //   room: tabUrl,
-  //   senderId: user.id,
-  //   senderName: user.name,
-  //   message: message
-  // });
 
   document.getElementById('message-input').value = '';
 }
