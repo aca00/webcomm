@@ -148,7 +148,7 @@ async function checkURL() {
                     message: `valid chatpath${chatPath}`
                 }
             }
-            getRating();
+            setRating();
             sendToPopUp(message);
             refreshChats(chatPath);
         } else {
@@ -176,7 +176,7 @@ async function refreshChats(chatPath) {
     };
 }
 
-async function getRating(rateVal = 0) {
+async function setRating(rateVal = 0) {
     rateVal = await worker.rate(rateVal, `userRating/${uid}/${currURL}`);
     sendToPopUp({ type: "rating", data: { rateVal: rateVal } });
 }
@@ -291,7 +291,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         }
     } else if (message.type == "rate-website") {
         console.log(`SW: rate request received ${message.data.rateVal}`);
-        getRating(message.data.rateVal);
+        setRating(message.data.rateVal);
     } else if (message.type == "get-auth-status") {
         console.log(`SW: auth status request received.`);
         response = {
