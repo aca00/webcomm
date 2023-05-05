@@ -1,12 +1,27 @@
-
 var uname = null;
 var uid = null;
 var utype = null;
 var emailVerified = null;
 var isAuthenticated = null;
 var newRateVal = null;
+var currentUrl = null;
+var lastSenderId;
+var oldestMessageTimestamp;
 
+// UI elements
+var contextSwitchIconRate = document.getElementById("rate-icon");
+var contextSwitchIconChat = document.getElementById("chat-icon");
+var contextSwitchIconAccount = document.getElementById("account-icon");
 
+var rateInterface = document.getElementById("rate-interface");
+var rateDiv = document.getElementById('rating-stars-area');
+var rateClearButton = document.getElementById("rate-clear-button");
+var rateSubmitButton = document.getElementById('rate-submit-button');
+
+var chatInterface = document.getElementById("chat-interface");
+var sendMessageButton = document.getElementById('send')
+
+var accountInterface = document.getElementById("account-interface");
 var emailVerficationButton = document.getElementById("email-verification-button");
 var signOutButton = document.getElementById("sign-out-button");
 var signInWithEmailButton = document.getElementById("sign-in-with-email-button");
@@ -16,90 +31,10 @@ var signedWithEmailBlock = document.getElementById("signed-in-with-email");
 var anonSignedInBlock = document.getElementById("anon-signed-in");
 var emailVerficationSuccess = document.getElementById("email-verificaton-success");
 var emailVerificationPending = document.getElementById("email-verification-pending");
-var rateIcon = document.getElementById("rate-icon");
-var chatIcon = document.getElementById("chat-icon");
-var accountIcon = document.getElementById("account-icon");
 
-var rateInterface = document.getElementById("rate-interface");
-var chatInterface = document.getElementById("chat-interface");
-var accountInterface = document.getElementById("account-interface");
+// Function definitions
 
-var rateDiv = document.getElementById('rating-stars-area');
-var rateClearButton = document.getElementById("rate-clear-button");
-var rateSubmitButton = document.getElementById('rate-submit-button');
-
-// function createChatBubble(chat, counter) {
-//   console.log(`POPUP: New message count: ${counter}`)
-//   let chatBub = document.createElement('pre');
-//   chatBub.classList.add('chat_bubble');
-//   chatBub.setAttribute('id', `m${counter}`);
-//   let chatContent = document.createTextNode(
-//     `Message: ${chat.message}\nUserName: ${chat.name}\nTimestamp: ${chat.time}\nType: ${chat.type}\nUID: ${chat.uid}\nStatus: ${chat.status}\nMsgCount: ${msgCount}`
-//   );
-//   chatBub.appendChild(chatContent);
-//   return chatBub;
-// }
-
-function updateUI(type, args) {
-  let chatFrame = document.getElementById(args.id);
-  // switch (type) {
-  //   case "loadAllChats":
-  //     for (let i = 1; i < args.chats.length; i++) {
-  //       chatFrame.appendChild(createChatBubble(args.chats[i]), msgCount++)
-  //     }
-  //     break;
-  //   case "newMessage":
-  //     console.log("POPUP: Appending new child by listener " + args.chat.name)
-  //     chatFrame.appendChild(createChatBubble(args.chat), msgCount++);
-  //     break;
-  //   case "sendMessage":
-  //     chatFrame.appendChild(createChatBubble(args.chat), args.chat.msgCount);
-  //     break;
-
-  //   case "updateStatus":
-  //     console.log(`POPUP bubble id: ${args.id}`)
-  //     let chatBubble = document.getElementById(args.id);
-  //     console.log("POPUP: Inside update Status");
-  //     if (chatBubble) {
-  //       chatBubble.textContent = `Message: ${args.message}\nUserName: ${args.name}\nTimestamp: ${args.time}\nType: ${args.type}\nUID: ${args.uid}\nStatus: ${args.status}\nMsgCount: ${args.msgCount}`;
-  //     }
-  //     break;
-  //   case "rating":
-  //     chatFrame.innerHTML = `<pre>Rate value: ${args.rateVal}</pre>`
-  //     break;
-
-  //   default:
-  //     document.getElementById(args.id).textContent = "ERRO";
-
-  // }
-}
-
-function send(text) {
-  let currTime = new Date().toISOString();
-
-  addMessage(message = text, sender = uname, timestamp = currTime);
-
-  chrome.runtime.sendMessage(
-    {
-      type: "send-message",
-      data: {
-        message: text,
-        time: currTime
-        // msgCount: msgCount
-      }
-    }
-  )
-}
-
-function rate(text) {
-  let rateVal = Number(text);
-  if (isNaN(rateVal)) {
-    console.log("POPUP: Not a number");
-  } else {
-    chrome.runtime.sendMessage({ type: "rate-website", data: { rateVal: rateVal } })
-  }
-}
-
+// general 
 function getAuthStatus() {
   console.log("POPUP: getting-auth-status")
   chrome.runtime.sendMessage({ type: "get-auth-status" });
@@ -163,118 +98,33 @@ function refresh() {
 
 }
 
-getAuthStatus();
-
-
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log(`POPUP: form SW: type: ${message.type}`);
-  if (message.type == "ack") {
-    if (message.data.type == "progress") {
-      console.log(`POPUP: ${message.data.message}`)
-    }
-  } else if (message.type == "allChats") {
-    console.log("POPUP: receive all chats");
-    console.log(message.data.chats)
-    updateUI("loadAllChats", {
-      id: "msg_res",
-      chats: message.data.chats
-    });
-  } else if (message.type == 'child-added') {
-
-    console.log(`POPUP: Child added at index uid:  ${message.data.uid}`);
-    console.log(message);
-
-    addMessage(message.data.message,
-      { id: message.data.uid, senderName: message.data.name },
-      new Date(message.data.time));
-
-
-    console.log(message);
-  } else if (message.type == 'message-sent') {
-    // console.log(`POPUP: Message sent count: ${message.data.msgCount}`);
-
-  } else if (message.type == "rating") {
-    console.log(`POPUP: rate value: ${message.data.rateVal}`);
-    var radioWithValue = document.querySelector(`input[name="rating"][value="${message.data.rateVal}"]`);
-    newRateVal = message.data.rateVal;
-    if (radioWithValue) {
-      radioWithValue.checked = true;
-    }
-
-  } else if (message.type == "auth-status") {
-    isAuthenticated = message.data.isAuthenticated;
-    if (!isAuthenticated) {
-      getAuthStatus()
-    } else {
-      console.log(`POPUP: auth status: ${isAuthenticated}`);
-      getUserDetails();
-      refresh();
-    }
-
-  } else if (message.type == "user-details") {
-    setUserDetails(message.data)
+// rate
+function rate(text) {
+  let rateVal = Number(text);
+  if (isNaN(rateVal)) {
+    console.log("POPUP: Not a number");
+  } else {
+    chrome.runtime.sendMessage({ type: "rate-website", data: { rateVal: rateVal } })
   }
+}
 
-});
+// chat 
+function send(text) {
+  let currTime = new Date().toISOString();
 
+  addMessage(message = text, sender = uname, timestamp = currTime);
 
-
-
-signInWithEmailButton.addEventListener('click', () => {
-  console.log("POPUP: clicked signInWithEmailButton");
-  chrome.tabs.create({ url: chrome.runtime.getURL("popup/login/index.html") })
-});
-
-
-rateIcon.addEventListener('click', () => {
-  rateInterface.style.display = "block";
-  chatInterface.style.display = "none";
-  accountInterface.style.display = "none";
-});
-
-chatIcon.addEventListener('click', () => {
-  rateInterface.style.display = "none";
-  chatInterface.style.display = "block";
-  accountInterface.style.display = "none";
-
-})
-
-accountIcon.addEventListener('click', () => {
-  console.log("clicked")
-  rateInterface.style.display = "none";
-  chatInterface.style.display = "none";
-  accountInterface.style.display = "block";
-
-});
-
-
-rateDiv.addEventListener("click", function () {
-  console.log("POPUP: clicked rateDiv");
-  var checkedRadio = document.querySelector('input[name="rating"]:checked');
-  if (checkedRadio) {
-    newRateVal = checkedRadio.value;
-    console.log("POPUP: Selected radio button value:", newRateVal);
-  }
-});
-
-rateSubmitButton.addEventListener("click", function () {
-  if (newRateVal) {
-    rate(newRateVal);
-  }
-});
-
-rateClearButton.addEventListener("click", () => {
-  console.log("POPUP: rate-clear-button-clicked")
-  var checkedRadio = document.querySelector('input[name="rating"]:checked');
-  checkedRadio.checked = false;
-  newRateVal = 0;
-});
-
-var tabUrl;
-var lastSenderId;
-var oldestMessageTimestamp;
-var isTyping = false;
-
+  chrome.runtime.sendMessage(
+    {
+      type: "send-message",
+      data: {
+        message: text,
+        time: currTime
+        // msgCount: msgCount
+      }
+    }
+  )
+}
 
 function addMessage(message = "", sender = "defaultSender", timestamp = Date.now(), prepend = false) {
 
@@ -354,24 +204,112 @@ function addMessage(message = "", sender = "defaultSender", timestamp = Date.now
 
 }
 
-function sendMessageTest() {
-  console.log("POPUP: sending message")
-  var message = document.getElementById('message-input').value;
 
-  if (message === '') {
-    return;
+getAuthStatus();
+
+// Event listeners 
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  console.log(`POPUP: form SW: type: ${message.type}`);
+  if (message.type == "ack") {
+    if (message.data.type == "progress") {
+      console.log(`POPUP: ${message.data.message}`)
+    }
+  } else if (message.type == "allChats") {
+    console.log("POPUP: receive all chats");
+    console.log(message.data.chats);
+  } else if (message.type == 'child-added') {
+
+    console.log(`POPUP: Child added at index uid:  ${message.data.uid}`);
+    console.log(message);
+
+    addMessage(message.data.message,
+      { id: message.data.uid, senderName: message.data.name },
+      new Date(message.data.time));
+
+
+    console.log(message);
+  } else if (message.type == 'message-sent') {
+    // console.log(`POPUP: Message sent count: ${message.data.msgCount}`);
+
+  } else if (message.type == "rating") {
+    console.log(`POPUP: rate value: ${message.data.rateVal}`);
+    var radioWithValue = document.querySelector(`input[name="rating"][value="${message.data.rateVal}"]`);
+    newRateVal = message.data.rateVal;
+    if (radioWithValue) {
+      radioWithValue.checked = true;
+    }
+
+  } else if (message.type == "auth-status") {
+    isAuthenticated = message.data.isAuthenticated;
+    if (!isAuthenticated) {
+      getAuthStatus()
+    } else {
+      console.log(`POPUP: auth status: ${isAuthenticated}`);
+      getUserDetails();
+      refresh();
+    }
+
+  } else if (message.type == "user-details") {
+    setUserDetails(message.data)
   }
 
-  addMessage(message, "hmdlkjfasd", Date.now());
+});
 
-  document.getElementById('message-input').value = '';
-}
 
-var sendmsgbt = document.getElementById('send')
+signInWithEmailButton.addEventListener('click', () => {
+  console.log("POPUP: clicked signInWithEmailButton");
+  chrome.tabs.create({ url: chrome.runtime.getURL("popup/login/index.html") })
+});
 
-sendmsgbt.addEventListener('click', () => {
+
+contextSwitchIconRate.addEventListener('click', () => {
+  rateInterface.style.display = "block";
+  chatInterface.style.display = "none";
+  accountInterface.style.display = "none";
+});
+
+contextSwitchIconChat.addEventListener('click', () => {
+  rateInterface.style.display = "none";
+  chatInterface.style.display = "block";
+  accountInterface.style.display = "none";
+
+})
+
+contextSwitchIconAccount.addEventListener('click', () => {
+  console.log("clicked")
+  rateInterface.style.display = "none";
+  chatInterface.style.display = "none";
+  accountInterface.style.display = "block";
+
+});
+
+
+rateDiv.addEventListener("click", function () {
+  console.log("POPUP: clicked rateDiv");
+  var checkedRadio = document.querySelector('input[name="rating"]:checked');
+  if (checkedRadio) {
+    newRateVal = checkedRadio.value;
+    console.log("POPUP: Selected radio button value:", newRateVal);
+  }
+});
+
+rateSubmitButton.addEventListener("click", function () {
+  if (newRateVal) {
+    rate(newRateVal);
+  }
+});
+
+rateClearButton.addEventListener("click", () => {
+  console.log("POPUP: rate-clear-button-clicked")
+  var checkedRadio = document.querySelector('input[name="rating"]:checked');
+  checkedRadio.checked = false;
+  newRateVal = 0;
+});
+
+
+sendMessageButton.addEventListener('click', () => {
   console.log("POPUP: clicked sendmsgbt");
-  // sendMessageTest();
   let msgText = document.getElementById('message-input').value;
   if (msgText === '') {
     return;
@@ -379,19 +317,4 @@ sendmsgbt.addEventListener('click', () => {
 
   send(msgText);
 
-})
-
-
-// sendButton.addEventListener('click', () => {
-
-//   console.log("POPUP: Button clicked")
-//   let text = txtbox.value;
-//   if (text == '') {
-//       console.log("POPUP: Type something")
-//   } else {
-//       console.log(`POPUP: Message to send: ${text}`);
-//       send(text);
-//       // rate(text);
-//   }
-// });
-
+});
