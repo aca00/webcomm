@@ -8,6 +8,7 @@ var uid = null;
 var utype = null;
 var emailVerified = null;
 var isAuthenticated = null;
+var newRateVal = null;
 
 
 var emailVerficationButton = document.getElementById("email-verification-button");
@@ -26,6 +27,10 @@ var accountIcon = document.getElementById("account-icon");
 var rateInterface = document.getElementById("rate-interface");
 var chatInterface = document.getElementById("chat-interface");
 var accountInterface = document.getElementById("account-interface");
+
+var rateDiv = document.getElementById('rating-stars-area');
+var rateClearButton = document.getElementById("rate-clear-button");
+var rateSubmitButton = document.getElementById('rate-submit-button');
 
 // function createChatBubble(chat, counter) {
 //   console.log(`POPUP: New message count: ${counter}`)
@@ -193,13 +198,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     console.log(`POPUP: Message sent count: ${message.data.msgCount}`);
 
   } else if (message.type == "rating") {
-    console.log(`POPUP: rate value: ${message.data.rateVal}`)
-    // updateUI("rating", {
-    //   id: "rate_res",
-    //   rateVal: message.data.rateVal
-    // });
-
-    document.getElementById("rate-result-bold").innerText = message.data.rateVal;
+    console.log(`POPUP: rate value: ${message.data.rateVal}`);
+    var radioWithValue = document.querySelector(`input[name="rating"][value="${message.data.rateVal}"]`);
+    newRateVal = message.data.rateVal;
+    if (radioWithValue) {
+      radioWithValue.checked = true;
+    }
 
   } else if (message.type == "auth-status") {
     isAuthenticated = message.data.isAuthenticated;
@@ -245,7 +249,30 @@ accountIcon.addEventListener('click', () => {
   chatInterface.style.display = "none";
   accountInterface.style.display = "block";
 
-})
+});
+
+
+rateDiv.addEventListener("click", function () {
+  console.log("POPUP: clicked rateDiv");
+  var checkedRadio = document.querySelector('input[name="rating"]:checked');
+  if (checkedRadio) {
+    newRateVal = checkedRadio.value;
+    console.log("POPUP: Selected radio button value:", newRateVal);
+  }
+});
+
+rateSubmitButton.addEventListener("click", function () {
+  if (newRateVal) {
+    rate(newRateVal);
+  }
+});
+
+rateClearButton.addEventListener("click", () => {
+  console.log("POPUP: rate-clear-button-clicked")
+  var checkedRadio = document.querySelector('input[name="rating"]:checked');
+  checkedRadio.checked = false;
+  newRateVal = 0;
+});
 
 var tabUrl;
 var lastSenderId;

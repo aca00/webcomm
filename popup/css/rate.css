@@ -101,6 +101,22 @@
 }
 
 #rate-submit-button {
+    padding: 8px;
+    border-radius: 10px;
+    border: 0px;
+    color: white;
+    background-color: blue;
+    font-size: medium;
+}
+
+#rate-submit-button:hover {
+
+    background-color: white;
+    color: blue;
+    border: 1px solid blue;
+}
+
+#rate-clear-button {
     border: 0px;
     color: blue;
     background-color: transparent;
