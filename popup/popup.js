@@ -4,7 +4,9 @@ var utype = null;
 var emailVerified = null;
 var isAuthenticated = null;
 var newRateVal = null;
+var avgRating = null;
 var currentUrl = null;
+var rateData = null;
 var lastSenderId;
 var oldestMessageTimestamp;
 
@@ -17,6 +19,7 @@ var rateInterface = document.getElementById("rate-interface");
 var rateDiv = document.getElementById('rating-stars-area');
 var rateClearButton = document.getElementById("rate-clear-button");
 var rateSubmitButton = document.getElementById('rate-submit-button');
+var rateResultBold = document.getElementById("rate-result-bold");
 
 var chatInterface = document.getElementById("chat-interface");
 var sendMessageButton = document.getElementById('send')
@@ -86,7 +89,22 @@ function rate(text) {
   if (isNaN(rateVal)) {
     console.log("POPUP: Not a number");
   } else {
-    chrome.runtime.sendMessage({ type: "rate-website", data: { rateVal: rateVal } })
+    chrome.runtime.sendMessage({ type: "popup:rate-website", data: { rateVal: rateVal } })
+  }
+}
+
+function clearStars() {
+  let checkedRadio = document.querySelector('input[name="rating"]:checked');
+  if (checkedRadio) {
+    checkedRadio.checked = false;
+  }
+  newRateVal = 0;
+}
+
+function setStarts() {
+  let radioWithValue = document.querySelector(`input[name="rating"][value="${newRateVal}"]`);
+  if (radioWithValue) {
+    radioWithValue.checked = true;
   }
 }
 
@@ -213,14 +231,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   } else if (message.type == 'message-sent') {
     // console.log(`POPUP: Message sent count: ${message.data.msgCount}`);
 
-  } else if (message.type == "rating") {
-    console.log(`POPUP: rate value: ${message.data.rateVal}`);
-    var radioWithValue = document.querySelector(`input[name="rating"][value="${message.data.rateVal}"]`);
-    newRateVal = message.data.rateVal;
-    if (radioWithValue) {
-      radioWithValue.checked = true;
-    }
-
   } else if (message.type == "sw:valid-url") {
     currentUrl = message.data.url;
     sendToWorker({ type: "popup:get-auth-status" });
@@ -237,7 +247,28 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   } else if (message.type == "sw:user-details") {
     setUserDetails(message.data);
     sendToWorker({ type: "popup:load-chats" });
-    // sendToWorker({ type: "popup:load-rating" });
+    sendToWorker({ type: "popup:load-rating" });
+  } else if (message.type == "sw:rate-value") {
+    rateData = message.data.rateData;
+    newRateVal = message.data.rateData.userRating;
+    if (rateData.totalCount == 0) {
+      avgRating = 0;
+    } else {
+      avgRating = (rateData.totalRating) / (rateData.totalCount);
+    }
+
+    if (newRateVal == 0) {
+      clearStars();
+    }
+
+    console.log(`POPUP:RATE
+      newRateVal: ${newRateVal}
+      avgRating; ${avgRating}
+    `)
+
+    setStarts();
+    rateResultBold.innerText = avgRating;
+
   }
 
 });
@@ -277,6 +308,7 @@ rateDiv.addEventListener("click", function () {
   if (checkedRadio) {
     newRateVal = checkedRadio.value;
     console.log("POPUP: Selected radio button value:", newRateVal);
+
   }
 });
 
@@ -288,9 +320,7 @@ rateSubmitButton.addEventListener("click", function () {
 
 rateClearButton.addEventListener("click", () => {
   console.log("POPUP: rate-clear-button-clicked")
-  var checkedRadio = document.querySelector('input[name="rating"]:checked');
-  checkedRadio.checked = false;
-  newRateVal = 0;
+  clearStars();
 });
 
 

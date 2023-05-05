@@ -2,7 +2,7 @@ var userName = null;
 var uid = null;
 var utype = null;
 var siteAddress = null;
-var rateVal = null;
+var rateData = null;
 var cred = null;
 var isAuthenticated = false;
 var emailVerified = null;
@@ -182,8 +182,9 @@ async function refreshChats(chatPath) {
 }
 
 async function setRating(rateVal = 0) {
-    rateVal = await worker.rate(rateVal, `userRating/${uid}/${siteAddress}`);
-    sendToPopUp({ type: "rating", data: { rateVal: rateVal } });
+    console.log(`SW setRating: rateVal: ${rateVal}`)
+    rateData = await worker.rate(rateVal, uid, `rating/${siteAddress}`);
+    sendToPopUp({ type: "sw:rate-value", data: { rateData: rateData } });
 }
 
 async function getUserDetails() {
@@ -275,6 +276,10 @@ async function loadChats() {
     await worker.getMessages(`chats/${siteAddress}`);
 }
 
+async function loadRating() {
+    await setRating(0);
+}
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     console.log(`SW: onMessageListener: type: ${message.type}`);
     let response;
@@ -299,9 +304,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 message: "New message submitted"
             }
         }
-    } else if (message.type == "rate-website") {
-        console.log(`SW: rate request received ${message.data.rateVal}`);
-        setRating(message.data.rateVal);
     } else if (message.type == "signup") {
         signUp(message.data.email, message.data.password, null)
     } else if (message.type == "check-email-verified") {
@@ -330,6 +332,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         }
     } else if (message.type == "popup:load-chats") {
         loadChats();
+    } else if (message.type == "popup:load-rating") {
+        loadRating();
+    } else if (message.type == "popup:rate-website") {
+        setRating(message.data.rateVal);
     }
 
     if (response) {

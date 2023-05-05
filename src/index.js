@@ -130,38 +130,79 @@ export class Worker {
         }
     }
 
-    async rate(rateVal = 0, path = null) {
+    async rate(rateVal = 0, uid = null, path = null) {
+
+        let rateData = { totalRating: 0, totalCount: 0, userRating: rateVal }
+
         if (path && this.db && uid) {
-            console.log("Rating path " + path)
+            console.log("INDEX: Rating path " + path)
+
             var listRef = ref(this.db, path);
 
+            let anyOneRatedSnapshot = await get(listRef);
+            let hasAnyOneRated = anyOneRatedSnapshot.exists();
+            let userRatedSnapshot = await get(ref(this.db, `${path}/people/${uid}`));
+            let hasUserRated = userRatedSnapshot.exists();
+
+            if (hasAnyOneRated) {
+                rateData.totalRating = anyOneRatedSnapshot.val().totalRating;
+                rateData.totalCount = anyOneRatedSnapshot.val().totalCount;
+            }
+
+            if (hasUserRated) {
+                rateData.userRating = userRatedSnapshot.val().rateVal;
+            }
+
+
+
             if (rateVal == 0) { // get status without updating
-                console.log("INDEX: Inside 0");
-                var snapshot = await get(ref(this.db, path));
-                if (snapshot.exists()) {
-                    console.log("INDEX: Snapshot exists")
-                    console.log(`INDEX: Already rated: ${snapshot.val().rateVal}`);
-                    return snapshot.val().rateVal;
-                } else {
-                    return 0; // unrated website
-                }
+                console.log("INDEX: rateVal = 0");
+
             } else if (rateVal == -1) { // remove rating
-                await remove(listRef).then(() => {
+                await remove(userRatedSnapshot).then(async () => {
+                    rateData.totalCount--;
+                    rateData.totalRating -= rateData.userRating;
+                    await update(listRef, {
+                        totalRating: rateData.totalRating,
+                        totalCount: rateData.totalCount
+                    });
                     console.log(`INDEX: Removed rating from ${path}`);
                 })
             } else { // update rating
-                await set(listRef, {
+
+                if (userRatedSnapshot) {
+                    rateData.totalCount--;
+                    rateData.totalRating -= rateData.userRating;
+                }
+
+                console.log(`INDEX: Update rating ${rateVal}`)
+                await update(ref(this.db, `${path}/people/${uid}`), {
+                    uid: uid,
                     time: new Date().toISOString(),
-                    rateVal: rateVal,
+                    rateVal: rateVal
+                });
+
+                rateData.totalCount++;
+                rateData.totalRating += rateVal;
+
+                await update(listRef, {
+                    totalCount: rateData.totalCount,
+                    totalRating: rateData.totalRating
                 }).then(() => {
-                    console.log("Added rating")
+                    console.log("INDEX: Added rating")
                 }).catch((error) => {
                     console.log("Error while rating website", error)
                 });
+
+
+                return this.rate(0, uid, path);
+
+
             }
-            return rateVal;
+
+            return rateData;
         } else {
-            console.log("Path invalid or user not registered")
+            console.log("INDEX: Path invalid or user not registered")
         }
     }
 
