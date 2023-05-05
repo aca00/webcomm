@@ -35,13 +35,12 @@ var emailVerificationPending = document.getElementById("email-verification-pendi
 // Function definitions
 
 // general 
-function getAuthStatus() {
-  console.log("POPUP: getting-auth-status")
-  chrome.runtime.sendMessage({ type: "get-auth-status" });
+function sendToWorker(message) {
+  console.log(`POPUP: sending to worker ${message.type}`);
+  chrome.runtime.sendMessage(message);
 }
-
-function getUserDetails() {
-  chrome.runtime.sendMessage({ type: "get-user-details" });
+function getAuthStatus() {
+  chrome.runtime.sendMessage({ type: "get-auth-status" });
 }
 
 function setUserDetails(userDetails) {
@@ -79,24 +78,7 @@ function setUserDetails(userDetails) {
 
 }
 
-function refresh() {
-  chrome.runtime.sendMessage({ type: "refresh" }, (response) => {
-    console.log("response")
 
-    // const urlText = document.getElementById('para');
-
-    // urlText.textContent = response.data.msg;
-
-    console.log(`
-          response to popup.js
-          ${typeof response}
-          ${response}
-      `)
-
-    console.log(response);
-  });
-
-}
 
 // rate
 function rate(text) {
@@ -204,8 +186,7 @@ function addMessage(message = "", sender = "defaultSender", timestamp = Date.now
 
 }
 
-
-getAuthStatus();
+sendToWorker({ type: "popup:check-url" });
 
 // Event listeners 
 
@@ -240,18 +221,23 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       radioWithValue.checked = true;
     }
 
-  } else if (message.type == "auth-status") {
+  } else if (message.type == "sw:valid-url") {
+    currentUrl = message.data.url;
+    sendToWorker({ type: "popup:get-auth-status" });
+  } else if (message.type == "sw:invalid-url") {
+    document.innerHTML = `<div>WebComm can't work here. Error: ${message.data.error}</div>`;
+  } else if (message.type == "sw:auth-status") {
     isAuthenticated = message.data.isAuthenticated;
     if (!isAuthenticated) {
-      getAuthStatus()
+      sendToWorker({ type: "popup:get-auth-status" });
     } else {
-      console.log(`POPUP: auth status: ${isAuthenticated}`);
-      getUserDetails();
-      refresh();
+      sendToWorker({ type: "popup:get-user-details" });
     }
 
-  } else if (message.type == "user-details") {
-    setUserDetails(message.data)
+  } else if (message.type == "sw:user-details") {
+    setUserDetails(message.data);
+    sendToWorker({ type: "popup:load-chats" });
+    // sendToWorker({ type: "popup:load-rating" });
   }
 
 });

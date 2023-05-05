@@ -166,12 +166,13 @@ export class Worker {
     }
 
     async listenToNewMessage(path) {
-        console.log("INDEX: listening")
+        console.log(`INDEX: listening ${path}`);
         var lastChatRef = query(
             ref(this.db, path),
             orderByChild('time'), // doubtful
             limitToLast(50)
         )
+
         onChildAdded(lastChatRef, (snapshot) => {
             chrome.runtime.sendMessage({ type: "child-added", data: snapshot.val() });
             console.log(`INDEX: A new child was added with key ${snapshot.key} and data ${snapshot.val()}`);

@@ -1,7 +1,7 @@
 var userName = null;
 var uid = null;
 var utype = null;
-var currURL = null;
+var siteAddress = null;
 var rateVal = null;
 var cred = null;
 var isAuthenticated = false;
@@ -72,9 +72,6 @@ async function authenticate() {
     // })
 }
 
-// email = "akhilca@gmail.com", password = "123abcdre"
-// signUp(email = "akhilca2000@gmail.com", password = "123abcdre")
-
 async function signIn(email = null, password = null) {
     let temp_cred = await worker.signInWithEmail(email, password);
     if (temp_cred != 0 || temp_cred != -1 || temp_cred != undefined) {
@@ -119,40 +116,48 @@ async function signUp(email = null, password = null, name = null) {
 
 }
 
-async function checkURL() {
-    console.log("SW: Checking url");
+function checkURL() {
+    console.log("SW: checking url");
+
+    let url;
+    let domain;
+    let path;
+    let isValidURL = false;
+    let message = ""
+
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         if (tabs && tabs.length > 0) {
             url = tabs[0].url;
         } else {
-            console.log("SW: No active tab found")
+            message = "SW_Err: no active tab found";
         }
 
         if (url === undefined) {
-            url = "SW: undefined-url";
-            console.log(url)
+            message = `SW_Err: undefined url ${url}`;
+        } else {
+            if (url.match(new RegExp("http[s]?\:\/\/.*", "gi"))) {
+                isValidURL = true;
+                url = new URL(url);
+                domain = url.hostname;
+                path = url.pathname;
+                message = `${domain}/${path}`;
+                domain = domain.split(".").join("<dot>");
+                path = path.split("/").join("<sep>");
+                siteAddress = `${domain}/${path}`
+                // chatPath = `chats/${currURL}`;
+                // refreshChats(chatPath);
+            } else {
+                message = `SW_Err: invalid url ${url}`;
+            }
         }
 
-        if (url.match(new RegExp("http[s]?\:\/\/.*", "gi"))) {
-            console.log(`SW: valid_url: ${url}`);
-            url = new URL(url)
-            domain = url.hostname.split(".").join("<dot>"); // replace all . with <dot>
-            path = url.pathname.split("/").join("<sep>"); // replace al / with <sep>
-            currURL = `${domain}/${path}`;
-            chatPath = `chats/${currURL}`;
-            message = {
-                type: "ack",
-                data: {
-                    type: "progress",
-                    status: 0,
-                    message: `valid chatpath${chatPath}`
-                }
-            }
-            setRating();
-            sendToPopUp(message);
-            refreshChats(chatPath);
+
+
+
+        if (isValidURL) {
+            sendToPopUp({ type: "sw:valid-url", data: { url: message } });
         } else {
-            console.log(`invalid_url: ${url}`)
+            sendToPopUp({ type: "sw:invalid-url", data: { error: message } });
         }
     });
 }
@@ -177,7 +182,7 @@ async function refreshChats(chatPath) {
 }
 
 async function setRating(rateVal = 0) {
-    rateVal = await worker.rate(rateVal, `userRating/${uid}/${currURL}`);
+    rateVal = await worker.rate(rateVal, `userRating/${uid}/${siteAddress}`);
     sendToPopUp({ type: "rating", data: { rateVal: rateVal } });
 }
 
@@ -199,7 +204,7 @@ async function sendNewMessage(data) {
         uname = userName,
         utype = utype,
         message = data.message,
-        path = `chats/${currURL}`,
+        path = `chats/${siteAddress}`,
         msgCount = data.msgCount,
         time = data.time,
     );
@@ -266,8 +271,13 @@ async function singOff() {
     await worker.anonymousSignIn();
 }
 
+async function loadChats() {
+    await worker.getMessages(`chats/${siteAddress}`);
+}
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    console.log(`SW: onMessageListener: type: ${message.type}`)
+    console.log(`SW: onMessageListener: type: ${message.type}`);
+    let response;
     if (message.type == 'refresh') {
         response = {
             type: "ack",
@@ -292,18 +302,24 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     } else if (message.type == "rate-website") {
         console.log(`SW: rate request received ${message.data.rateVal}`);
         setRating(message.data.rateVal);
-    } else if (message.type == "get-auth-status") {
-        console.log(`SW: auth status request received.`);
+    } else if (message.type == "signup") {
+        signUp(message.data.email, message.data.password, null)
+    } else if (message.type == "check-email-verified") {
+        checkIfEmailVerified();
+    } else if (message.type == "sign-off") {
+        signOff();
+    } else if (message.type == "popup:check-url") {
+        checkURL();
+    } else if (message.type == "popup:get-auth-status") {
         response = {
-            type: "auth-status",
+            type: "sw:auth-status",
             data: {
                 isAuthenticated: isAuthenticated
             }
         }
-    } else if (message.type == "get-user-details") {
-
+    } else if (message.type == "popup:get-user-details") {
         response = {
-            type: "user-details",
+            type: "sw:user-details",
             data: {
                 "userName": userName,
                 "userId": uid,
@@ -312,17 +328,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 "emailVerified": emailVerified
             }
         }
-    } else if (message.type == "signup") {
-        signUp(message.data.email, message.data.password, null)
-    } else if (message.type == "check-email-verified") {
-        checkIfEmailVerified();
-    } else if (message.type == "sign-off") {
-        signOff();
+    } else if (message.type == "popup:load-chats") {
+        loadChats();
     }
 
+    if (response) {
+        sendToPopUp(response);
+    }
 
-    sendToPopUp(response);
-    return true;
 
 });
 
