@@ -1,8 +1,4 @@
 
-var msgCount = 0;
-var txtbox = document.getElementById('tbox');
-var sendButton = document.getElementById('myButton');
-
 var uname = null;
 var uid = null;
 var utype = null;
@@ -88,8 +84,8 @@ function send(text) {
       type: "send-message",
       data: {
         message: text,
-        time: currTime,
-        msgCount: msgCount
+        time: currTime
+        // msgCount: msgCount
       }
     }
   )
@@ -195,7 +191,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     console.log(message);
   } else if (message.type == 'message-sent') {
-    console.log(`POPUP: Message sent count: ${message.data.msgCount}`);
+    // console.log(`POPUP: Message sent count: ${message.data.msgCount}`);
 
   } else if (message.type == "rating") {
     console.log(`POPUP: rate value: ${message.data.rateVal}`);
