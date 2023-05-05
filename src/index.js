@@ -206,15 +206,12 @@ export class Worker {
 
 
     async getMessages(path = null) {
-        var messages = ["START"];
         if (path && this.db) {
             this.listenToNewMessage(path);
             return null
         } else {
-            console.log("path-error");
+            console.log("INDEX: getMessages: Err: path-error");
         }
-        console.log(`messages-ready-to-return: ${messages}`)
-        return messages;
     }
 
     async signInWithEmail(email = null, password = null) {
