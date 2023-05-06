@@ -17,7 +17,13 @@ try {
 
 const worker = new Worker.Worker();
 
-authenticate();
+var sampleInput = [[1, -1, 1, 1, 1, -1, -1, -1, 1, -1, -1, 1, -1, -1, 0, -1, -1, 1, 0, -1, -1, -1, -1, -1, -1, 0, -1, 1, 1, -1]]
+
+
+worker.loadModel(sampleInput);
+
+
+// authenticate();
 
 async function authenticate() {
     authInProgress = true;

@@ -204,7 +204,7 @@ function addMessage(message = "", sender = "defaultSender", timestamp = Date.now
 
 }
 
-sendToWorker({ type: "popup:check-url" });
+// sendToWorker({ type: "popup:check-url" });
 
 // Event listeners 
 
