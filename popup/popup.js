@@ -21,6 +21,9 @@ var rateClearButton = document.getElementById("rate-clear-button");
 var rateSubmitButton = document.getElementById('rate-submit-button');
 var rateResultBold = document.getElementById("rate-result-bold");
 
+var iconForSecurity = document.getElementById("icon-for-security");
+var securityComment = document.getElementById("security-comment");
+
 var chatInterface = document.getElementById("chat-interface");
 var sendMessageButton = document.getElementById('send')
 
@@ -204,7 +207,7 @@ function addMessage(message = "", sender = "defaultSender", timestamp = Date.now
 
 }
 
-// sendToWorker({ type: "popup:check-url" });
+sendToWorker({ type: "popup:check-url" });
 
 // Event listeners 
 
@@ -248,6 +251,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     setUserDetails(message.data);
     sendToWorker({ type: "popup:load-chats" });
     sendToWorker({ type: "popup:load-rating" });
+    sendToWorker({ type: "popup:model-predict" });
   } else if (message.type == "sw:rate-value") {
     rateData = message.data.rateData;
     newRateVal = message.data.rateData.userRating;
@@ -269,6 +273,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     setStarts();
     rateResultBold.innerText = avgRating;
 
+  } else if (message.type == "sw:pred-result") {
+
+    let predictionScore = message.data.value;
+    console.log(`POPUP: prediction_score: ${predictionScore[0][0]}`);
+
+    if (predictionScore[0][0] > 0.5) {
+      iconForSecurity.innerText = "✓"
+      securityComment.innerText = "Secure"
+    } else {
+      iconForSecurity.innerText = "X"
+      securityComment.innerText = "Doubtful"
+    }
   }
 
 });

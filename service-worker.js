@@ -9,6 +9,7 @@ var cred = null;
 var isAuthenticated = false;
 var emailVerified = null;
 var authInProgress = false;
+var currentUrl = null;
 
 try {
     importScripts('./dist/bundle.js');
@@ -21,24 +22,22 @@ try {
 const worker = new Worker.Worker();
 const urlWorker = new URLWorker();
 
-let tempURL = new URL("https://stackoverflow.com/questions/4460586/javascript-regular-expression-to-check-for-ip-addresses")
+// let tempURL = new URL("https://stackoverflow.com/questions/4460586/javascript-regular-expression-to-check-for-ip-addresses")
 
-let row = urlWorker.create_input(tempURL)
-console.log(row);
+// let row = urlWorker.create_input(tempURL)
+// console.log(row);
 
-urlWorker.test();
+// urlWorker.test();
 
-var sampleInput = [row]
-
-
-worker.loadModel(sampleInput);
+// var sampleInput = [row]
 
 
-// authenticate();
 
-async function generateURLParameters() {
 
-}
+
+authenticate();
+
+
 
 async function authenticate() {
     authInProgress = true;
@@ -158,8 +157,8 @@ function checkURL() {
         } else {
             if (url.match(new RegExp("http[s]?\:\/\/.*", "gi"))) {
                 isValidURL = true;
-                generateURLParameters(url)
                 url = new URL(url);
+                currentUrl = url;
                 domain = url.hostname;
                 path = url.pathname;
                 message = `${domain}/${path}`;
@@ -302,6 +301,13 @@ async function loadRating() {
     await setRating(0);
 }
 
+async function checkPhishing() {
+    let input = urlWorker.create_input(currentUrl)
+    let pred = await worker.loadModel([input]);
+    let res = await pred.array()
+    sendToPopUp({ type: "sw:pred-result", data: { value: res } });
+}
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     console.log(`SW: onMessageListener: type: ${message.type}`);
     let response;
@@ -354,6 +360,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         }
     } else if (message.type == "popup:load-chats") {
         loadChats();
+    } else if (message.type == "popup:model-predict") {
+        checkPhishing();
+
     } else if (message.type == "popup:load-rating") {
         loadRating();
     } else if (message.type == "popup:rate-website") {
