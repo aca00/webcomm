@@ -192,7 +192,7 @@ body {
 
 #message-input {
     display: block;
-    margin: 7px 5px 5px 10px;
+    margin: 7px 5px 10px 10px;
     width: calc(100% - 60px);
     padding: 5px;
     border-radius: 3px;
