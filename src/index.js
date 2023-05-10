@@ -55,7 +55,7 @@ export class Worker {
         console.log(`modelpath: ${modelPath}`);
 
         // Load the TensorFlow.js model from a local file using a relative path
-        let fbpath = "https://firebasestorage.googleapis.com/v0/b/my-test-project-16705.appspot.com/o/model.json?alt=media&token=8e1043da-212d-42da-bec1-e2acfe5a9aa3"
+        let fbpath = "https://firebasestorage.googleapis.com/v0/b/my-test-project-16705.appspot.com/o/model.json?alt=media&token=d2f4471c-d108-4f35-bb30-8325c0fd1c82"
         const model = await tf.loadLayersModel(fbpath);
         console.log(model);
 
