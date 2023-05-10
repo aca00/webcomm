@@ -1,3 +1,5 @@
+// import { URLWorker } from "./dist/generateURLParameters";
+
 var userName = null;
 var uid = null;
 var utype = null;
@@ -10,14 +12,33 @@ var authInProgress = false;
 
 try {
     importScripts('./dist/bundle.js');
+    importScripts('src/generateURLParameters.js')
     console.log("Script imported");
 } catch (e) {
     console.log("couldn't import script");
 }
 
 const worker = new Worker.Worker();
+const urlWorker = new URLWorker();
 
-authenticate();
+let tempURL = new URL("https://stackoverflow.com/questions/4460586/javascript-regular-expression-to-check-for-ip-addresses")
+
+let row = urlWorker.create_input(tempURL)
+console.log(row);
+
+urlWorker.test();
+
+var sampleInput = [row]
+
+
+worker.loadModel(sampleInput);
+
+
+// authenticate();
+
+async function generateURLParameters() {
+
+}
 
 async function authenticate() {
     authInProgress = true;
@@ -137,6 +158,7 @@ function checkURL() {
         } else {
             if (url.match(new RegExp("http[s]?\:\/\/.*", "gi"))) {
                 isValidURL = true;
+                generateURLParameters(url)
                 url = new URL(url);
                 domain = url.hostname;
                 path = url.pathname;
