@@ -115,7 +115,7 @@ function setStarts() {
 function send(text) {
   let currTime = new Date().toISOString();
 
-  addMessage(message = text, sender = uname, timestamp = currTime);
+  // addMessage(message = text, sender = uname, timestamp = currTime);
 
   chrome.runtime.sendMessage(
     {

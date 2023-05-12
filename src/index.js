@@ -188,7 +188,7 @@ export class Worker {
                 })
             } else { // update rating
 
-                if (userRatedSnapshot) {
+                if (hasUserRated) {
                     rateData.totalCount--;
                     rateData.totalRating -= rateData.userRating;
                 }
