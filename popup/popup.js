@@ -77,11 +77,7 @@ function setUserDetails(userDetails) {
     signInStatusDescription.innerText = "😎 Signed anonymously"
   } else if (utype == "Signed") {
     signInStatusDescription.innerText = "😍 Signed using email"
-
   }
-
-
-
 }
 
 
@@ -130,6 +126,12 @@ function send(text) {
 }
 
 function addMessage(message = "", sender = "defaultSender", timestamp = Date.now(), prepend = false) {
+
+  let urlRegex = /(https?:\/\/[^\s]+)/g;
+
+  message = message.replace(urlRegex, function (url) {
+    return '<a href="' + url + '">' + url + '</a>';
+  });
 
   if (!oldestMessageTimestamp || timestamp < oldestMessageTimestamp) {
     oldestMessageTimestamp = timestamp;
@@ -192,7 +194,9 @@ function addMessage(message = "", sender = "defaultSender", timestamp = Date.now
   // Adds the message
   var messageDiv = document.createElement('div');
   messageDiv.className = 'message';
-  messageDiv.appendChild(document.createTextNode(message));
+  var messageText = document.createElement('span');
+  messageText.innerHTML = message
+  messageDiv.appendChild(messageText);
   messageWrapper.appendChild(messageDiv);
 
   li.appendChild(messageWrapper);
@@ -286,7 +290,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       securityComment.innerText = "Doubtful"
     }
   }
-
 });
 
 
