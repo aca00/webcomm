@@ -6,6 +6,7 @@
 
 
 
+
 }
 
 #message-input-menu {
@@ -91,6 +92,7 @@ body {
     display: inline-block;
     cursor: pointer;
     color: #d2efee;
+    float: left;
 }
 
 
@@ -120,7 +122,7 @@ body {
 
 .message-wrapper {
     float: left;
-    background-color: #dcf8c6;
+    background-color: #BCEBCB;
     /* background-color: red; */
     /* box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); */
     border-radius: 8px;
@@ -186,9 +188,18 @@ body {
     bottom: 130px;
     width: 50%;
     height: 40px;
-    background-color: #84eed7;
+    /* background-color: #84eed7; */
     box-shadow: 0 -1px 20px 0 rgba(0, 0, 0, 0.2);
     overflow: hidden;
+}
+
+textarea {
+    border: none;
+    outline: none;
+    background: transparent;
+    resize: none;
+    overflow: hidden;
+
 }
 
 #message-input {
@@ -196,15 +207,16 @@ body {
     margin: 7px 5px 10px 10px;
     width: calc(100% - 60px);
     padding: 5px;
-    border-radius: 3px;
+    border-width: 0px;
+    border-radius: 0px;
     font-family: sans-serif;
-    border: solid 1px #dcdcdc;
+    /* border: solid 1px #dcdcdc; */
     transition: box-shadow 0.2s, border 0.2s;
     outline: none;
 }
 
 #message-input:focus {
-    box-shadow: 0 0 200px 1px lightseagreen;
+    /* box-shadow: 0 0 200px 1px lightseagreen; */
 }
 
 #send {

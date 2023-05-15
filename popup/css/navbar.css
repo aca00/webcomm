@@ -46,9 +46,9 @@ body nav.tab .icons {
   z-index: 2;
   display: flex;
   justify-content: space-around;
-  width: calc(100% - .7rem); 
+  width: calc(100% - .7rem);
   padding: 0 1rem;
-} 
+}
 
 /* body nav.tab .icons .icon {
   position: relative;
@@ -78,6 +78,7 @@ body nav.tab .bar {
 
 .icon.selected {
   background-color: lightskyblue;
+  border-radius: 100%;
   color: black;
 }
 
