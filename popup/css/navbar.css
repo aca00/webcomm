@@ -41,7 +41,7 @@ body nav.tab[data-selected="3"] .bar .middle .side:last-child {
   flex-grow: 0;
 } */
 
-body nav.tab .icons {
+body nav.tab {
   position: absolute;
   z-index: 2;
   display: flex;
@@ -77,15 +77,24 @@ body nav.tab .bar {
 }
 
 .icon.selected {
-  background-color: lightskyblue;
-  border-radius: 100%;
+  background-color: gainsboro;
+  border-radius: 50%;
+  height: 35px;
+  width: 35px;
   color: black;
 }
 
 .icon {
-  font-size: 2em;
+  font-size: 1.25em;
+  text-align: center;
+  align-items: center;
 }
 
+ .icons {
+  font-size: 2em;
+  align-items: center;
+  position: relative;
+ }  
 
 /* body nav.tab .bar .cap {
   background: white;

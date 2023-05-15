@@ -69,13 +69,16 @@ body {
 }
 
 #room-stats {
+    display: flex;
+    text-align: center;
+    justify-content: center;
     position: fixed;
     width: 100%;
     height: 20px;
     line-height: 20px;
     box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.2);
-    background-color: lightseagreen;
-    color: white;
+    background-color: rgb(247, 247, 247);
+    color: rgb(54, 46, 46);
     text-align: center;
     font-weight: bold;
     overflow: hidden;
@@ -84,7 +87,6 @@ body {
 
 #welcome-message {
     width: 50%;
-    float: left;
 }
 
 #welcome-message #user {
@@ -186,7 +188,7 @@ body {
     position: fixed;
     border-radius: 20px;
     bottom: 130px;
-    width: 50%;
+    width:90%;
     height: 40px;
     /* background-color: #84eed7; */
     box-shadow: 0 -1px 20px 0 rgba(0, 0, 0, 0.2);
@@ -221,8 +223,9 @@ textarea {
 
 #send {
     position: fixed;
+    /* float: right; */
     bottom: 100px;
-    right: 105px;
+    right: 25px;
     width: 40px;
     height: 100px;
     background-image: url('../img/send.png');
@@ -230,6 +233,7 @@ textarea {
     background-repeat: no-repeat;
     background-position: center;
     opacity: 0.5;
+
 }
 
 #name-input-wrapper {
