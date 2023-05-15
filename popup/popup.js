@@ -242,7 +242,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     currentUrl = message.data.url;
     sendToWorker({ type: "popup:get-auth-status" });
   } else if (message.type == "sw:invalid-url") {
-    document.innerHTML = `<div>WebComm can't work here. Error: ${message.data.error}</div>`;
+    document.write(`<div>WebComm can't work here. Error: ${message.data.error}</div>`);
   } else if (message.type == "sw:auth-status") {
     isAuthenticated = message.data.isAuthenticated;
     if (!isAuthenticated) {
