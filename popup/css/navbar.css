@@ -77,10 +77,10 @@ body nav.tab .bar {
 }
 
 .icon.selected {
-  background-color: gainsboro;
+  /* background-color: gainsboro;
   border-radius: 50%;
   height: 35px;
-  width: 35px;
+  width: 35px; */
   color: black;
 }
 
@@ -88,13 +88,15 @@ body nav.tab .bar {
   font-size: 1.25em;
   text-align: center;
   align-items: center;
+  padding: 20px;
+  color: gray;
 }
 
- .icons {
+.icons {
   font-size: 2em;
   align-items: center;
   position: relative;
- }  
+}
 
 /* body nav.tab .bar .cap {
   background: white;
