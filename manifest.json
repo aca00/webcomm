@@ -3,6 +3,9 @@
     "author": "gp6",
     "version": "0.0.1",
     "description": "",
+    "icons": {
+        "128": "icons/webcomm-icon.png"
+    },
     "permissions": [
         "tabs",
         "nativeMessaging",
