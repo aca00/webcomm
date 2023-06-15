@@ -91,6 +91,57 @@ class URLWorker {
         return -1
     }
 
+    checkForHyphenLikeCharacters(domain) {
+        var hyphenRegex = /[-–—]/;
+        if (hyphenRegex.test(domain)) {
+            return -1;
+        } else {
+            return 1;
+        }
+    }
+
+    lookAlike(url) {
+        var lookAlikeRegex = /.*[аạąäàáąсƈċԁɗеẹėéèġһіíïјʝκӏḷոоοօȯọỏơóòöрզʂυսüúùνѵхҳуýʐż]+.*/
+        if (lookAlikeRegex.test(url)) {
+            return -1;
+        } else {
+            return 1;
+        }
+    }
+
+    numDots(url) {
+        let numOfDots = url.split(".").length - 1;
+
+        if (numOfDots > 3) {
+            return -1;
+        } else {
+            return 1;
+        }
+    }
+
+    numHiphens(url) {
+        let hyphenCount = (url.match(/[-–—]/g) || []).length;
+
+        if (hyphenCount > 8) {
+            return -1;
+        } else {
+            return 0;
+        }
+    }
+
+    numDigits(url) {
+        let digitCount = (url.match(/\d/g) || []).length;
+        if (digitCount == 0) {
+            return 1;
+        } else if (digitCount > 0 && digitCount < 10) {
+            return 0;
+        } else {
+            return -1;
+        }
+    }
+
+
+
     create_input(url) {
         let row = new Array()
 
@@ -105,6 +156,14 @@ class URLWorker {
         row.push(this.has_subdomain(url.href));
         row.push(this.has_port(url.port));
         row.push(this.has_https(url.protocol));
+
+
+        // row.push(this.checkForHyphenLikeCharacters(url.hostname));
+        // row.push(this.lookAlike(url.href));
+        // row.push(this.numDots(url.href));
+        // row.push(this.numHiphens(url.href))
+        // row.push(this.numDigits(url.href));
+
 
 
         return row;

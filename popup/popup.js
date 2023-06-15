@@ -264,6 +264,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     } else {
       avgRating = (rateData.totalRating) / (rateData.totalCount);
     }
+    avgRating = avgRating.toFixed(2)
 
     if (newRateVal == 0) {
       clearStars();
