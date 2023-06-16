@@ -367,6 +367,43 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         loadRating();
     } else if (message.type == "popup:rate-website") {
         setRating(message.data.rateVal);
+    } else if (message.type == "popup:warn-cs") {
+        console.log("SW: ooooooooooooooooooooooooooppppppppppppppppppssssssssssss");
+
+        chrome.windows.getCurrent(w => {
+            console.log("humm")
+            // chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+            //     if (changeInfo.status === 'complete') {
+            //         console.log("Hmm: sendiing");
+            //         chrome.tabs.sendMessage(tabId, {
+            //             type: "sw:warning"
+            //         });
+            //     }
+            // });
+            // chrome.tabs.query({ active: true, windowId: w.id }, async (tbs) => {
+            //     console.log("Hurrrrrrrrrrrrrrey");
+            //     if (tbs && tbs.length > 0) {
+            //         chrome.tabs.sendMessage(tbs[0].id, { type: "sw:warning" });
+            //         console.log("SW: hurr: message sent");
+            //     }
+            // });
+        });
+
+        // chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        //     console.log("inside tabs_query");
+        //     if (tabs) {
+        //         console.log("SW: Yes tabs");
+        //         console.log(tabs);
+        //     }
+        //     if (tabs && tabs.length > 0) {
+        //         console.log("SW: if tabs")
+        //         url = tabs[0].url;
+        //         console.log(`SW: url: ${url}`);
+        //     } else {
+        //         message = "SW_Err: no active tab found";
+        //         console.log(message);
+        //     }
+        // });
     }
 
     if (response) {
@@ -376,5 +413,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 });
 
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    console.log("hhhhujjjjiui");
+    checkURL();
+    checkPhishing();
+    if (changeInfo.status === 'complete') {
+        console.log("Hmm: sendiing");
+        chrome.tabs.sendMessage(tabId, {
+            type: "sw:warning"
+        });
+    }
+});
 
 // TODO: issue fix two times reload for showing u detaisl
