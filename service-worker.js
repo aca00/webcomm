@@ -10,6 +10,8 @@ var isAuthenticated = false;
 var emailVerified = null;
 var authInProgress = false;
 var currentUrl = null;
+var isValidURL = false;
+var isSecure = null;
 
 try {
     importScripts('./dist/bundle.js');
@@ -142,7 +144,7 @@ function checkURL() {
     let url;
     let domain;
     let path;
-    let isValidURL = false;
+    isValidURL = false;
     let message = ""
 
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -164,21 +166,13 @@ function checkURL() {
                 message = `${domain}/${path}`;
                 domain = domain.split(".").join("<dot>");
                 path = path.split("/").join("<sep>");
+                path = path.split(".").join("<dot>");
                 siteAddress = `${domain}/${path}`
                 // chatPath = `chats/${currURL}`;
                 // refreshChats(chatPath);
             } else {
                 message = `SW_Err: invalid url ${url}`;
             }
-        }
-
-
-
-
-        if (isValidURL) {
-            sendToPopUp({ type: "sw:valid-url", data: { url: message } });
-        } else {
-            sendToPopUp({ type: "sw:invalid-url", data: { error: message } });
         }
     });
 }
@@ -305,6 +299,13 @@ async function checkPhishing() {
     let input = urlWorker.create_input(currentUrl)
     let pred = await worker.loadModel([input]);
     let res = await pred.array()
+    if (res) {
+        if (res[0][0] > 0.5) {
+            isSecure = true;
+        } else {
+            isSecure = false;
+        }
+    }
     sendToPopUp({ type: "sw:pred-result", data: { value: res } });
 }
 
@@ -339,7 +340,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     } else if (message.type == "sign-off") {
         signOff();
     } else if (message.type == "popup:check-url") {
-        checkURL();
+        if (!currentUrl) {
+            checkURL();
+        }
+        if (isValidURL) {
+            sendToPopUp({ type: "sw:valid-url", data: { url: message } });
+        } else {
+            sendToPopUp({ type: "sw:invalid-url", data: { error: message } });
+        }
+
     } else if (message.type == "popup:get-auth-status") {
         response = {
             type: "sw:auth-status",
@@ -361,49 +370,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     } else if (message.type == "popup:load-chats") {
         loadChats();
     } else if (message.type == "popup:model-predict") {
-        checkPhishing();
+        if (isValidURL) {
+            checkPhishing();
+        }
+
 
     } else if (message.type == "popup:load-rating") {
         loadRating();
     } else if (message.type == "popup:rate-website") {
         setRating(message.data.rateVal);
     } else if (message.type == "popup:warn-cs") {
-        console.log("SW: ooooooooooooooooooooooooooppppppppppppppppppssssssssssss");
-
-        chrome.windows.getCurrent(w => {
-            console.log("humm")
-            // chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-            //     if (changeInfo.status === 'complete') {
-            //         console.log("Hmm: sendiing");
-            //         chrome.tabs.sendMessage(tabId, {
-            //             type: "sw:warning"
-            //         });
-            //     }
-            // });
-            // chrome.tabs.query({ active: true, windowId: w.id }, async (tbs) => {
-            //     console.log("Hurrrrrrrrrrrrrrey");
-            //     if (tbs && tbs.length > 0) {
-            //         chrome.tabs.sendMessage(tbs[0].id, { type: "sw:warning" });
-            //         console.log("SW: hurr: message sent");
-            //     }
-            // });
-        });
-
-        // chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        //     console.log("inside tabs_query");
-        //     if (tabs) {
-        //         console.log("SW: Yes tabs");
-        //         console.log(tabs);
-        //     }
-        //     if (tabs && tabs.length > 0) {
-        //         console.log("SW: if tabs")
-        //         url = tabs[0].url;
-        //         console.log(`SW: url: ${url}`);
-        //     } else {
-        //         message = "SW_Err: no active tab found";
-        //         console.log(message);
-        //     }
-        // });
     }
 
     if (response) {
@@ -414,14 +390,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    console.log("hhhhujjjjiui");
     checkURL();
-    checkPhishing();
+    if (isValidURL) { checkPhishing(); }
+
     if (changeInfo.status === 'complete') {
-        console.log("Hmm: sendiing");
-        chrome.tabs.sendMessage(tabId, {
-            type: "sw:warning"
-        });
+        if (!isSecure && isValidURL) {
+            chrome.tabs.sendMessage(tabId, {
+                type: "sw:warning"
+            });
+        }
     }
 });
 

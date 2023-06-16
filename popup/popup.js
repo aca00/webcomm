@@ -285,12 +285,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     if (predictionScore[0][0] > 0.5) {
       iconForSecurity.innerText = "✓"
-      securityComment.innerText = "Secure"
-      sendToWorker({ type: "popup:warn-cs" });
+      securityComment.innerText = "Secure";
     } else {
       iconForSecurity.innerText = "X";
       securityComment.innerText = "Doubtful";
-
+      
     }
   }
 });
