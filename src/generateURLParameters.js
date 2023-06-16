@@ -15,6 +15,7 @@ class URLWorker {
         return ipv6Pattern.test(str);
     }
 
+    // 1
     checkIPAddress(str) {
         if (this.isIPv4(str) || this.isIPv6(str)) {
             return -1
@@ -23,6 +24,7 @@ class URLWorker {
         }
     }
 
+    // 2
     checkUrlLength(url) {
         console.log(`length: ${url}`)
         if (url.length < 54) {
@@ -34,6 +36,7 @@ class URLWorker {
         }
     }
 
+    // 3
     check_for_url_shortening_service(url) {
         if (url.match(url_shortening_services_pattern)) {
             return -1
@@ -41,6 +44,7 @@ class URLWorker {
         return 1
     }
 
+    // 4
     hasAtSymbol(url) {
         if (url.includes('@')) {
             return -1
@@ -48,6 +52,7 @@ class URLWorker {
         return 1
     }
 
+    // 5
     has_double_has_redirect(url) {
         const regex = /\/\//g
         const matches = url.match(regex) || []
@@ -58,6 +63,7 @@ class URLWorker {
         }
     }
 
+    // 6
     prefix_suffix(url) {
         if (url.match(/^https?:\/\/[^\-]+-[^\-]+\//)) {
             return -1
@@ -66,6 +72,7 @@ class URLWorker {
         }
     }
 
+    // 7
     has_subdomain(url) {
         const matches = url.match(/\./g) || []
         if (matches.length === 1) {
@@ -77,6 +84,7 @@ class URLWorker {
         }
     }
 
+    // 8
     has_port(port) {
         if (port) {
             return -1
@@ -84,6 +92,7 @@ class URLWorker {
         return 1
     }
 
+    // 9
     has_https(url) {
         if (url.match(/^https:\/\//)) {
             return 1
@@ -91,6 +100,7 @@ class URLWorker {
         return -1
     }
 
+    // 10
     checkForHyphenLikeCharacters(domain) {
         var hyphenRegex = /[-–—]/;
         if (hyphenRegex.test(domain)) {
@@ -100,6 +110,7 @@ class URLWorker {
         }
     }
 
+    // 11
     lookAlike(url) {
         var lookAlikeRegex = /.*[аạąäàáąсƈċԁɗеẹėéèġһіíïјʝκӏḷոоοօȯọỏơóòöрզʂυսüúùνѵхҳуýʐż]+.*/
         if (lookAlikeRegex.test(url)) {
@@ -109,6 +120,8 @@ class URLWorker {
         }
     }
 
+
+    // 12
     numDots(url) {
         let numOfDots = url.split(".").length - 1;
 
@@ -119,6 +132,7 @@ class URLWorker {
         }
     }
 
+    // 13
     numHiphens(url) {
         let hyphenCount = (url.match(/[-–—]/g) || []).length;
 
@@ -129,6 +143,7 @@ class URLWorker {
         }
     }
 
+    // 14
     numDigits(url) {
         let digitCount = (url.match(/\d/g) || []).length;
         if (digitCount == 0) {
