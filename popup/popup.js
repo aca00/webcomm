@@ -224,7 +224,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   } else if (message.type == "allChats") {
     console.log("POPUP: receive all chats");
     console.log(message.data.chats);
-  } else if (message.type == 'child-added') {
+  } else if (message.type == 'index:child-added') {
 
     console.log(`POPUP: Child added at index uid:  ${message.data.uid}`);
     console.log(message);

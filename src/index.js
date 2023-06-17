@@ -43,6 +43,7 @@ export class Worker {
         this.app = initializeApp(firebaseConfig);
         this.db = getDatabase(this.app);
         this.auth = getAuth();
+        this.arrayOfMessages = new Array();
     }
 
     async loadModel(sampleInput) {
@@ -233,7 +234,8 @@ export class Worker {
         )
 
         onChildAdded(lastChatRef, (snapshot) => {
-            chrome.runtime.sendMessage({ type: "child-added", data: snapshot.val() });
+            this.arrayOfMessages.push(snapshot.val());
+            chrome.runtime.sendMessage({ type: "index:child-added", data: snapshot.val() });
             console.log(`INDEX: A new child was added with key ${snapshot.key} and data ${snapshot.val()}`);
         });
     }

@@ -1,4 +1,3 @@
-// import { URLWorker } from "./dist/generateURLParameters";
 
 var userName = null;
 var uid = null;
