@@ -235,6 +235,7 @@ export class Worker {
 
         onChildAdded(lastChatRef, (snapshot) => {
             this.arrayOfMessages.push(snapshot.val());
+            console.log(`INDEX: Length of arrayOfMessages ${this.arrayOfMessages.length}`);
             chrome.runtime.sendMessage({ type: "index:child-added", data: snapshot.val() });
             console.log(`INDEX: A new child was added with key ${snapshot.key} and data ${snapshot.val()}`);
         });

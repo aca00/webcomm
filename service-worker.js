@@ -9,6 +9,7 @@ var isAuthenticated = false;
 var emailVerified = null;
 var authInProgress = false;
 var currentUrl = null;
+var samePage = false;
 
 try {
     importScripts('./dist/bundle.js');
@@ -156,14 +157,23 @@ function checkURL() {
         } else {
             if (url.match(new RegExp("http[s]?\:\/\/.*", "gi"))) {
                 isValidURL = true;
-                url = new URL(url);
-                currentUrl = url;
-                domain = url.hostname;
-                path = url.pathname;
-                message = `${domain}/${path}`;
-                domain = domain.split(".").join("<dot>");
-                path = path.split("/").join("<sep>");
-                siteAddress = `${domain}/${path}`
+                if (url == currentUrl) {
+                    console.log("SW: Same page");
+                    samePage = true;
+                    sendToPopUp({ type: "sw:same-page" });
+                } else {
+                    samePage = false;
+                    worker.arrayOfMessages = new Array();
+                    url = new URL(url);
+                    currentUrl = url;
+                    domain = url.hostname;
+                    path = url.pathname;
+                    message = `${domain}/${path}`;
+                    domain = domain.split(".").join("<dot>");
+                    path = path.split("/").join("<sep>");
+                    siteAddress = `${domain}/${path}`;
+                }
+
                 // chatPath = `chats/${currURL}`;
                 // refreshChats(chatPath);
             } else {
@@ -176,7 +186,7 @@ function checkURL() {
 
         if (isValidURL) {
             sendToPopUp({ type: "sw:valid-url", data: { url: message } });
-        } else {
+        } else if (!isValidURL) {
             sendToPopUp({ type: "sw:invalid-url", data: { error: message } });
         }
     });
@@ -366,6 +376,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         loadRating();
     } else if (message.type == "popup:rate-website") {
         setRating(message.data.rateVal);
+    } else if (message.type == "popup:load-older-messages") {
+        console.log(`SW: arrayof messages: `)
+        console.log(worker.arrayOfMessages);
+        for (let message of worker.arrayOfMessages) {
+            sendToPopUp({ type: "index:child-added", data: message });
+        }
     }
 
     if (response) {

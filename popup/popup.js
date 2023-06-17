@@ -7,6 +7,7 @@ var newRateVal = null;
 var avgRating = null;
 var currentUrl = null;
 var rateData = null;
+var samePage = false;
 var lastSenderId;
 var oldestMessageTimestamp;
 
@@ -216,7 +217,7 @@ sendToWorker({ type: "popup:check-url" });
 // Event listeners 
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log(`POPUP: form SW: type: ${message.type}`);
+  console.log(`POPUP: onMessage: type: ${message.type}`);
   if (message.type == "ack") {
     if (message.data.type == "progress") {
       console.log(`POPUP: ${message.data.message}`)
@@ -235,6 +236,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 
     console.log(message);
+  } else if (message.type == "sw:same-page") {
+    samePage = true;
   } else if (message.type == 'message-sent') {
     // console.log(`POPUP: Message sent count: ${message.data.msgCount}`);
 
@@ -253,7 +256,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   } else if (message.type == "sw:user-details") {
     setUserDetails(message.data);
-    sendToWorker({ type: "popup:load-chats" });
+    if (samePage) {
+      sendToWorker({ type: "popup:load-older-messages" });
+    } else {
+      sendToWorker({ type: "popup:load-chats" });
+    }
     sendToWorker({ type: "popup:load-rating" });
     sendToWorker({ type: "popup:model-predict" });
   } else if (message.type == "sw:rate-value") {
