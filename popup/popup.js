@@ -294,8 +294,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       iconForSecurity.innerText = "✓"
       securityComment.innerText = "Secure"
     } else {
-      iconForSecurity.innerHTML = "<span style='color:red'>X</span>"
-      securityComment.innerText = "Doubtful"
+      iconForSecurity.innerHTML = "<span style='color:red'>X</span>";
+      securityComment.innerText = "Doubtful";
     }
   }
 });

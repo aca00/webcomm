@@ -9,6 +9,7 @@ var isAuthenticated = false;
 var emailVerified = null;
 var authInProgress = false;
 var currentUrl = null;
+var currentTabId = null;
 var samePage = false;
 
 try {
@@ -166,11 +167,13 @@ function checkURL() {
                     worker.arrayOfMessages = new Array();
                     url = new URL(url);
                     currentUrl = url;
+                    currentTabId = tabs[0].id;
                     domain = url.hostname;
                     path = url.pathname;
                     message = `${domain}/${path}`;
                     domain = domain.split(".").join("<dot>");
                     path = path.split("/").join("<sep>");
+                    path = path.split(".").join("<dot>");
                     siteAddress = `${domain}/${path}`;
                 }
 
@@ -313,7 +316,11 @@ async function loadRating() {
 async function checkPhishing() {
     let input = urlWorker.create_input(currentUrl)
     let pred = await worker.loadModel([input]);
-    let res = await pred.array()
+    let res = await pred.array();
+    if (res[0][0] > 0.5) {
+        console.log("SW: Sending alert");
+        chrome.tabs.sendMessage(currentTabId, {});
+    }
     sendToPopUp({ type: "sw:pred-result", data: { value: res } });
 }
 
