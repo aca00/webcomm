@@ -317,10 +317,10 @@ async function checkPhishing() {
     let input = urlWorker.create_input(currentUrl)
     let pred = await worker.loadModel([input]);
     let res = await pred.array();
-    if (res[0][0] > 0.5) {
-        console.log("SW: Sending alert");
-        chrome.tabs.sendMessage(currentTabId, {});
-    }
+    // if (res[0][0] > 0.5) {
+    //     console.log("SW: Sending alert");
+    //     chrome.tabs.sendMessage(currentTabId, {});
+    // }
     sendToPopUp({ type: "sw:pred-result", data: { value: res } });
 }
 
@@ -395,6 +395,33 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         sendToPopUp(response);
     }
 
+
+});
+
+
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+    console.log(`SW: TB: ${tab.url}`);
+    let testUrl = tab.url;
+    if (testUrl && testUrl.match(new RegExp("http[s]?\:\/\/.*", "gi"))) {
+        console.log("SW: phish: valid url");
+        let input = urlWorker.create_input(new URL(testUrl));
+        let pred = await worker.loadModel([input]);
+        let res = await pred.array();
+
+        // if (res[0][0] > 0.5) {
+        //     chrome.tabs.sendMessage(tab.id, {});
+        // }
+
+        if (changeInfo.status === 'complete' && res[0][0] < 0.5) {
+            console.log("SW: Sending warning")
+            chrome.tabs.sendMessage(tabId, {
+                url: tab.url,
+                type: 'URL_CHANGE'
+            });
+        }
+    } else {
+        console.log("SW: Invalid-url: phishing detection failed. ")
+    }
 
 });
 
