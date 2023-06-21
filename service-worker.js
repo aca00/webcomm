@@ -382,6 +382,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     } else if (message.type == "popup:load-rating") {
         loadRating();
     } else if (message.type == "popup:rate-website") {
+        console.log(`SW: Update rate value: ${message.data.rateVal}`);
         setRating(message.data.rateVal);
     } else if (message.type == "popup:load-older-messages") {
         console.log(`SW: arrayof messages: `)

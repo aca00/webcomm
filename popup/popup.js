@@ -94,11 +94,13 @@ function rate(text) {
 }
 
 function clearStars() {
+  console.log("POPUP: Inside clear stars");
   let checkedRadio = document.querySelector('input[name="rating"]:checked');
   if (checkedRadio) {
     checkedRadio.checked = false;
   }
-  newRateVal = 0;
+  newRateVal = -1;
+  console.log(`Rate value changed ${newRateVal}}`)
 }
 
 function setStarts() {
@@ -340,13 +342,17 @@ rateDiv.addEventListener("click", function () {
 });
 
 rateSubmitButton.addEventListener("click", function () {
+  console.log(`POPUP:submit button clicked ${newRateVal}`)
   if (newRateVal) {
+    console.log(`POPUP:submitting new rate value: ${newRateVal}`);
     rate(newRateVal);
   }
 });
 
 rateClearButton.addEventListener("click", () => {
-  console.log("POPUP: rate-clear-button-clicked")
+  console.log(`POPUP: rate-clear-button-clicked ${newRateVal}`);
+  newRateVal = -1;
+  console.log(`POPUP: new rate value: ${newRateVal}`);
   clearStars();
 });
 

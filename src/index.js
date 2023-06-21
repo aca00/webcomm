@@ -178,7 +178,8 @@ export class Worker {
                 console.log("INDEX: rateVal = 0");
 
             } else if (rateVal == -1) { // remove rating
-                await remove(userRatedSnapshot).then(async () => {
+                console.log(`INDEX: Rate value -1 ${hasUserRated}`);
+                await remove(ref(this.db, `${path}/people/${uid}`)).then(async () => {
                     rateData.totalCount--;
                     rateData.totalRating -= rateData.userRating;
                     await update(listRef, {
@@ -186,7 +187,10 @@ export class Worker {
                         totalCount: rateData.totalCount
                     });
                     console.log(`INDEX: Removed rating from ${path}`);
-                })
+                });
+
+                return this.rate(0, uid, path);
+
             } else { // update rating
 
                 if (hasUserRated) {
